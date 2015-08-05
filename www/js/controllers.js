@@ -9,8 +9,6 @@ angular.module('starter.controllers', [])
 
   var currentUser = Parse.User.current();
   if (currentUser) {
-      console.log(Parse.User.current().attributes.username);
-
 
       var CoorList = Parse.Object.extend("CoorList");
       var query = new Parse.Query(CoorList);
@@ -20,7 +18,6 @@ angular.module('starter.controllers', [])
         success: function(results) {
 
           $scope.locations = results;
-          console.log($scope.locations);
 
           // alert("Successfully retrieved " + results.length + "location");
           
@@ -187,18 +184,46 @@ $scope.data = {
 
 .controller('ResultCtrl', function($scope, $state, $stateParams) {
 
+      //Calc distance between 2 points
+      var actualGoogCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
+      var userGoogCor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
+      var distance_number = google.maps.geometry.spherical.computeDistanceBetween(actualGoogCoor, userGoogCor) / 1000;
+      distance = distance_number.toFixed(0);
+      distance = numberWithCommas(distance);
+      $scope.distance = distance;
+
+      // SAVE SCORE TO DATABASE
+      var Result = Parse.Object.extend("Result");
+      var result = new Result();
+
+      result.set("distance", distance_number);
+      result.set("user", Parse.User.current().id);
+      result.set("locationId", $stateParams.location_id);
+
+      result.save(null, {
+        success: function(result) {
+        },
+        error: function(result, error) {
+          alert('Failed to create new object, with error code: ' + error.message);
+        }
+      });
+      // END OF SAVING SCORE TO DATABASE
+
+      
+
+      // //Calc user's score
+      // var maxScore = 500;
+      // var earthCircumference = 40075;
+      // var maxDistance = earthCircumference / 2;
+      // var distance = google.maps.geometry.spherical.computeDistanceBetween(actualGoogCoor, userGoogCor) / 1000;
+      // var score = (-1 * maxScore / maxDistance) * distance + maxScore;
+      // score = score.toFixed(0);
+      // score = numberWithCommas(score);    
+      // $scope.score = score;
 
     $scope.initialise = function() {
       var guessCoor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
       var actualCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
-
-      //Calc distance between 2 points
-      var actualGoogCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
-      var userGoogCor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
-      var distance = google.maps.geometry.spherical.computeDistanceBetween(actualGoogCoor, userGoogCor) / 1000;
-      distance = distance.toFixed(0);
-      distance = numberWithCommas(distance);
-      $scope.distance = distance;
 
       //Initial settings for the map
       var mapOptions = {
