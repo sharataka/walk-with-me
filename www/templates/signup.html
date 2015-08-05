@@ -1,0 +1,28 @@
+
+
+<ion-view view-title="Signup">
+  <ion-content>
+
+        <form>
+            <ion-list>
+                <label class="item item-input">
+                    <span class="input-label">Email</span>
+                    <input type="text" placeholder="" ng-model="data.email" ng-change="search()">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Username</span>
+                    <input type="text" placeholder="" ng-model="data.username" ng-change="search()">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Password</span>
+                    <input type="password" placeholder="" ng-model="data.password" ng-change="search()">
+                </label>
+            </ion-list>
+            <button class="button button-stable button-block " on-touch="signup()">Sign up</button>
+        </form>
+
+
+
+
+  </ion-content>
+</ion-view>

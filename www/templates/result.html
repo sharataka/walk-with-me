@@ -1,0 +1,54 @@
+<ion-view view-title="Result" hide-back-button="true" cache-view="false">
+  <ion-content>
+
+
+<div class="spacer" style="width: 300px; height: 20px;"></div>
+
+<div id = "map_result" data-tap-disabled="true"></div>
+
+<div class="spacer" style="width: 300px; height: 20px;"></div>
+
+<!-- START OF CARD -->
+    <div class="list card">
+
+
+  <div class="item item-divider">
+    
+    <h2>{{answer}}</h2>
+    <p>{{distance}} km away</p>
+  </div>
+
+  <!-- START OF IMAGE -->
+  <div class="item item-image image">
+    <img class = "image" src = "{{image}}">
+
+        <h1>
+    	<span>
+    		{{distance}} km away
+
+    		<br />
+    		<span class='spacer'></span>from {{answer}}</small>
+    	</span>
+    </h1>
+
+  </div>
+  <!-- END OF IMAGE -->
+
+    <!-- START OF BUTTONS -->
+  <div class="item tabs tabs-secondary tabs-icon-left">
+    <a class="tab-item" href="#/dash">
+      <i class="icon ion-paper-airplane"></i>
+      Next
+    </a>
+  </div>
+  <!-- END OF BUTTONS -->
+
+  </div>
+  <!-- END OF CARD -->
+
+
+
+
+
+  </ion-content>
+</ion-view>
