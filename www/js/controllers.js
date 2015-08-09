@@ -1,57 +1,120 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $state) {
+.controller('DashCtrl', function($scope, $state, $ionicLoading) {
+ 
 
-  $scope.items = '';
+  $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0,
+          duration: 5000
+        });
+
+
   $scope.locations = '';
 
-  $scope.items = [0,1]
 
   var currentUser = Parse.User.current();
+
   if (currentUser) {
 
       var CoorList = Parse.Object.extend("CoorList");
       var query = new Parse.Query(CoorList);
       query.descending("createdAt");
-      query.limit(10);
+      query.limit(7);
       query.find({
-        success: function(results) {
+        success: function(locations) {
 
-          $scope.locations = results;
+            var Result = Parse.Object.extend("Result");
+            var result_query = new Parse.Query(Result);
+            result_query.equalTo("user", currentUser.id);
+            result_query.find({
+              
+              success: function(results) {
 
-          // alert("Successfully retrieved " + results.length + "location");
-          
-          // Do something with the returned Parse.Object values
-          for (var i = 0; i < results.length; i++) {
-            var object = results[i];
-            // alert(object.id + ' - ' + object.get('Answer'));
-          }
+                $scope.locations = locations;
+
+                // Get list of locations that user has answered
+                user_result = [];
+                for (var i = 0; i < results.length; i++) {
+                  var object = results[i];
+                  user_result.push(object.get('locationId'));
+                }
+
+                // Get list of all locations
+                location_array = [];
+                // Do something with the returned Parse.Object values
+                for (var i = 0; i < locations.length; i++) {
+                  var object = locations[i];
+                  location_array.push(object.id);
+                }
+
+                // Get matching locations
+                mathching_locations_index = [];
+                for (var i = user_result.length; i >= 0 ; i--) {
+                  var location_index = location_array.indexOf(user_result[i]);
+                  mathching_locations_index.push(location_index);
+                }
+
+                // Sort matching locations by descending order
+                mathching_locations_index.sort(function(a,b){return b-a});
+                
+                // Remove items from locations array of objects
+                for (var i = 0; i < mathching_locations_index.length; i++) {
+                  if (mathching_locations_index[i] > -1) {
+                    $scope.locations.splice(mathching_locations_index[i],1);
+                  }
+                }
+
+                $ionicLoading.hide();
+
+              },
+
+              error: function(error){
+                alert("Error: " + error.code + " " + error.message);
+                $ionicLoading.hide();
+              }
+
+            });
+
+
+
+
+
+
         },
         error: function(error) {
           alert("Error: " + error.code + " " + error.message);
+          $ionicLoading.hide();
         }
       });
 
   } else {
       // show the signup or login page
+      $ionicLoading.hide();
+      $state.go('login');
   }
 
 
   //LOGOUT BUTTON
   $scope.logout = function(item,event){
-
     Parse.User.logOut();
     $state.go('login');
-
   };
   // END OF LOGUT BUTTON
 
+  $scope.refresh = function () {
+    window.location.reload(true);  
+  };
   
 
 })
 
-.controller('LoginCtrl', function($scope, $state) {
+.controller('LoginCtrl', function($scope, $state, $cordovaFacebook) {
 
+// var auth = $firebaseAuth(fb);
 
 // Data bind the username and password fields
 $scope.data = {
@@ -74,7 +137,115 @@ $scope.data = {
     });
 
   };
+  
+  
 
+
+$scope.loginFacebook = function(){
+ 
+  //Browser Login
+  if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
+ 
+    Parse.FacebookUtils.logIn(null, {
+      success: function(user) {
+        console.log(user);
+        if (!user.existed()) {
+          $state.go('tab.dash');
+        } else {
+          $state.go('tab.dash');
+        }
+      },
+      error: function(user, error) {
+        alert("User cancelled the Facebook login or did not fully authorize.");
+      }
+    });
+ 
+  } 
+  //Native Login
+  else {
+ 
+    $cordovaFacebook.login(["public_profile", "email"]).then(function(success){
+ 
+      console.log(success);
+ 
+      //Need to convert expiresIn format from FB to date
+      var expiration_date = new Date();
+      expiration_date.setSeconds(expiration_date.getSeconds() + success.authResponse.expiresIn);
+      expiration_date = expiration_date.toISOString();
+ 
+      var facebookAuthData = {
+        "id": success.authResponse.userID,
+        "access_token": success.authResponse.accessToken,
+        "expiration_date": expiration_date
+      };
+ 
+      Parse.FacebookUtils.logIn(facebookAuthData, {
+        success: function(user) {
+          console.log(user);
+          if (!user.existed()) {
+            $state.go('tab.dash');
+          } else {
+            $state.go('tab.dash');
+          }
+        },
+        error: function(user, error) {
+          alert("User cancelled the Facebook login or did not fully authorize.");
+        }
+      });
+ 
+    }, function(error){
+      console.log(error);
+    });
+ 
+  }
+ 
+};
+
+    // $scope.facebookfirebaselogin = function() {
+    //     $cordovaOauth.facebook("1602858929982444", ["email"]).then(function(result) {
+    //         auth.$authWithOAuthToken("facebook", result.access_token).then(function(authData) {
+    //             alert(JSON.stringify(authData));
+    //             alert('success');
+    //             $state.go('tab.dash');
+    //         }, function(error) {
+    //             alert('feailure');
+    //             console.error("ERROR: " + error);
+    //         });
+    //     }, function(error) {
+    //         alert('failure');
+    //         alert("ERROR: " + error);
+    //     });
+    // }
+
+  // Facebook login
+
+  //Login with facebook
+
+  //Get the facebook user_id
+
+  //Check to see whether a parse account exists with that user id
+    //If so, login that user alongside the facebook credentials
+
+    //If not, signup that user in Parse
+
+
+
+  // $scope.facebookfirebaselogin = function(item,event){
+
+  //   Parse.FacebookUtils.logIn(null, {
+  //     success: function(user) {
+  //       if (!user.existed()) {
+  //         alert("User signed up and logged in through Facebook!");
+  //       } else {
+  //         alert("User logged in through Facebook!");
+  //       }
+  //     },
+  //     error: function(user, error) {
+  //       alert("User cancelled the Facebook login or did not fully authorize.");
+  //     }
+  //   });
+
+  // };
 
 
 })
@@ -178,38 +349,28 @@ $scope.data = {
 
   google.maps.event.addDomListener(document.getElementById("map"), 'load', $scope.initialise());
 
+      // DISPLAY IMAGE AGAIN
+      
+      var CoorList = Parse.Object.extend("CoorList");
+      var query = new Parse.Query(CoorList);
+      query.equalTo("objectId", $stateParams.location_id);
+      query.find({
+        success: function(results) {
 
+          localStorage.image = results[0].attributes.imageLink;
+          localStorage.answer = results[0].attributes.Answer;
+
+        },
+        error: function(error) {
+          alert("Error: " + error.code + " " + error.message);
+        }
+      });
+      // END OF DISPLAY IMAGE
 
 })
 
 .controller('ResultCtrl', function($scope, $state, $stateParams) {
 
-      //Calc distance between 2 points
-      var actualGoogCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
-      var userGoogCor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
-      var distance_number = google.maps.geometry.spherical.computeDistanceBetween(actualGoogCoor, userGoogCor) / 1000;
-      distance = distance_number.toFixed(0);
-      distance = numberWithCommas(distance);
-      $scope.distance = distance;
-
-      // SAVE SCORE TO DATABASE
-      var Result = Parse.Object.extend("Result");
-      var result = new Result();
-
-      result.set("distance", distance_number);
-      result.set("user", Parse.User.current().id);
-      result.set("locationId", $stateParams.location_id);
-
-      result.save(null, {
-        success: function(result) {
-        },
-        error: function(result, error) {
-          alert('Failed to create new object, with error code: ' + error.message);
-        }
-      });
-      // END OF SAVING SCORE TO DATABASE
-
-      
 
       // //Calc user's score
       // var maxScore = 500;
@@ -246,6 +407,14 @@ $scope.data = {
         map: map,
       });
 
+      var infowindow = new google.maps.InfoWindow({
+          content: 'Your guess'
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map,marker);
+      });
+
 
       var flightPlanCoordinates = [guessCoor, actualCoor];
       var flightPath = new google.maps.Polyline({
@@ -260,26 +429,43 @@ $scope.data = {
 
       $scope.map=map;
 
+
+
+      //Calc distance between 2 points
+      var actualGoogCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
+      var userGoogCor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
+      var distance_number = google.maps.geometry.spherical.computeDistanceBetween(actualGoogCoor, userGoogCor) / 1000;
+      distance = distance_number.toFixed(0);
+      distance = numberWithCommas(distance);
+      $scope.distance = distance;
+
+      // SAVE SCORE TO DATABASE
+      var Result = Parse.Object.extend("Result");
+      var result = new Result();
+      
+      result.set("distance", distance_number);
+      result.set("user", Parse.User.current().id);
+      result.set("locationId", $stateParams.location_id);
+      result.set("guessLat", Number(localStorage.userLat));
+      result.set("guessLong", Number(localStorage.userLong));
+      
+      result.save(null, {
+        success: function(result) {
+          
+        },
+        error: function(result, error) {
+          alert('Failed to create new object, with error code: ' + error.message);
+        }
+      });
+      // END OF SAVING SCORE TO DATABASE
+
+      $scope.image = localStorage.image;
+      $scope.answer = localStorage.answer;
+
     };
     
     google.maps.event.addDomListener(document.getElementById("map_result"), 'load', $scope.initialise());
 
-      // DISPLAY IMAGE AGAIN
-      var CoorList = Parse.Object.extend("CoorList");
-      var query = new Parse.Query(CoorList);
-      query.equalTo("objectId", $stateParams.location_id);
-      query.find({
-        success: function(results) {
-
-          $scope.image = results[0].attributes.imageLink;
-          $scope.answer = results[0].attributes.Answer;
-
-        },
-        error: function(error) {
-          alert("Error: " + error.code + " " + error.message);
-        }
-      });
-      // END OF DISPLAY IMAGE
 
     
     //Format number with comma

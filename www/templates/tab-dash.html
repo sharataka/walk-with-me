@@ -1,4 +1,4 @@
-<ion-view view-title="Take the Tent" hide-back-button="true">
+<ion-view view-title="Take the Tent" hide-back-button="true" cache-view="false">
 
 
 <!-- BEGINNING OF NAV BUTTONS -->
@@ -12,88 +12,60 @@
 
   <ion-content>
 
+   <ion-refresher
+    pulling-text="Pull to refresh..."
+    on-refresh="refresh()">
+  </ion-refresher>
+
+  <div class="spacer" style="width: 300px; height: 20px;"></div>
+
+<!--   <center>
+    <a class="button button-outline button-positive" href = "">
+      Tap to see places you've answered
+    </a>
+  </center> -->
+
+  <div class="spacer" style="width: 300px; height: 20px;"></div>
+
   <!-- BEGINNING OF REPEATING -->
     <ion-list>
 
-            <div class="spacer" style="width: 300px; height: 40px;"></div>
+      
 
-      <ion-item collection-repeat="item in locations" >
+      <ion-item collection-repeat="item in locations" style = "border-color:white;" >
         
-        <!-- {{item.id}} -->
 
-        <div class="list card">
-            
-
-            <!-- START OF IMAGE -->
-            <div class="item item-image">
+        <!-- START OF IMAGE -->
+         <!-- <p class = "ion-locked" style = "margin-left:10px;">&nbsp;&nbsp;<strong>Guess to unlock</strong></p> -->
+              <div class="item item-image">
               <img class = "image" src = "{{item.attributes.imageLink}}">
-            </div>
+              </div>
             <!-- END OF IMAGE -->
 
             <!-- START OF BUTTONS -->
-            <div class="item tabs tabs-secondary tabs-icon-left">
-              
-              <a class="tab-item" href= "#/tab/guess/{{item.id}}/{{item.attributes.Lat}}/{{item.attributes.Long}}">
-                <i class="icon ion-earth calm"></i>
-                Guess
-              </a>
 
-              <a class="tab-item" href="#">
-                <i class="icon ion-heart"></i>
-                Save
-              </a>
+             <div class = "row"> 
 
+               
+
+  <div class="col">    <center>        <a class="button button-icon icon ion-earth positive" href= "#/tab/guess/{{item.id}}/{{item.attributes.Lat}}/{{item.attributes.Long}}">
+                
+              </a></center></div>
+  <div class="col"><center><a class="button button-icon icon ion-heart ">  </a></center></div>
+
+    
             </div>
+
             <!-- END OF BUTTONS -->
 
-        </div>
 
-        <div class="spacer" style="width: 300px; height: 30px;"></div>
+
+
+
 
       </ion-item>
     </ion-list>
   <!-- END OF REPEATING -->
-
-
-
-
-<!-- START OF CARD -->
-    <div class="list card">
-
-<!--   <div class="item item-avatar">
-    <img src="avatar.jpg">
-    <h2>Pretty Hate Machine</h2>
-    <p>Nine Inch Nails</p>
-  </div> -->
-
-  <!-- START OF IMAGE -->
-  <div class="item item-image">
-    <img class = "image" src = "http://i.imgur.com/cJRGYbk.jpg">
-  </div>
-  <!-- END OF IMAGE -->
-
-
-  <!-- START OF BUTTONS -->
-  <div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" href= "#/tab/guess/9dPYhRnFFi/37.7460/-119.5329">
-      <i class="icon ion-earth calm"></i>
-      Guess
-    </a>
-    <a class="tab-item" href="#">
-      <i class="icon ion-chatbox calm"></i>
-      Comment
-    </a>
-  </div>
-  <!-- END OF BUTTONS -->
-
-  </div>
-  <!-- END OF CARD -->
-
-
-
-
-
-
 
 
   </ion-content>

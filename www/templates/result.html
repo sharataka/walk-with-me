@@ -9,42 +9,36 @@
 <div class="spacer" style="width: 300px; height: 20px;"></div>
 
 <!-- START OF IMAGE CARD -->
-    <div class="list card">
+    <div class="list card" style = "box-shadow:0 1px 3px rgba(0, 0, 0, 0);">
 
-
-
-<!-- RESULT TEXT ABOVE IMAGE -->
-<!--   <div class="item item-divider">
-    
-    <h2>{{answer}}</h2>
-    <p>{{distance}} km away</p>
-  </div> -->
-<!-- END OF RESULT TEXT ABOVE IMAGE -->
 
   <!-- START OF IMAGE -->
-  <div class="item item-image image">
+  
     <img class = "image" src = "{{image}}">
 
-        <h1>
-    	<span>
-    		{{distance}} km away
+      <h1>
+    	 <span>
+    		&nbsp;{{distance}} km away
 
     		<br />
-    		<span class='spacer'></span>from {{answer}}</small>
+    		<span class='spacer'></span>&nbsp; {{answer}}</small>
     	</span>
     </h1>
 
-  </div>
+  
   <!-- END OF IMAGE CARD -->
 
-    <!-- START OF BUTTONS -->
-  <div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" href="#/dash">
-      <i class="icon ion-paper-airplane"></i>
-      Next
-    </a>
+  <div class = "row"> 
+
+    <div class="col">    
+      <center>        
+        <a class="button button-icon icon ion-map" href = "#/dash">
+          Next
+        </a>
+      </center>
+    </div>
+  
   </div>
-  <!-- END OF BUTTONS -->
 
   </div>
   <!-- END OF CARD -->
