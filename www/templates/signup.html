@@ -5,20 +5,29 @@
 
         <form>
             <ion-list>
-                <label class="item item-input">
-                    <span class="input-label">Email</span>
-                    <input type="text" placeholder="" ng-model="data.email" ng-change="search()">
-                </label>
+                
                 <label class="item item-input">
                     <span class="input-label">Username</span>
                     <input type="text" placeholder="" ng-model="data.username" ng-change="search()">
                 </label>
+
                 <label class="item item-input">
                     <span class="input-label">Password</span>
                     <input type="password" placeholder="" ng-model="data.password" ng-change="search()">
                 </label>
+
+                <label class="item item-input">
+                    <span class="input-label">Email</span>
+                    <input type="text" placeholder="optional" ng-model="data.email" ng-change="search()">
+                </label>
+                
             </ion-list>
-            <button class="button button-stable button-block " on-touch="signup()">Sign up</button>
+
+            <div class="spacer" style="width: 300px; height: 30px;"></div>
+
+            <center>
+                <button class="button button-outline button-positive button-large " on-touch="signup()">Sign up</button>
+            </center>
         </form>
 
 

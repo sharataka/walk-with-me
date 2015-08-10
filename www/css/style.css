@@ -5,13 +5,7 @@
    height: 100%;
 }
 
-.item{
-	padding-left: 0px;
-	padding-right: 0px;
-	padding-top: 0px;
+.profile_pic{
+	border-radius: 50%;
 }
 
-.card{
-	margin-left: 0px;
-	margin-right: 0px;
-}

@@ -3,6 +3,7 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope, $state, $ionicLoading) {
  
 
+
   $ionicLoading.show({
           content: 'Loading',
           animation: 'fade-in',
@@ -17,6 +18,8 @@ angular.module('starter.controllers', [])
 
 
   var currentUser = Parse.User.current();
+
+  $scope.refresh_message = "Answer the pictures above to get more...";
 
   if (currentUser) {
 
@@ -66,6 +69,10 @@ angular.module('starter.controllers', [])
                   if (mathching_locations_index[i] > -1) {
                     $scope.locations.splice(mathching_locations_index[i],1);
                   }
+                }
+
+                if ($scope.locations.length == 0){
+                  $scope.refresh_message = "You've played all of our pictures. But we'll have more tomorrow so come back...";
                 }
 
                 $ionicLoading.hide();
@@ -407,6 +414,20 @@ $scope.loginFacebook = function(){
         map: map,
       });
 
+
+      // Add circle overlay
+      var circle = new google.maps.Circle({
+        map: map,
+        center: actualCoor,
+        radius: 500000,  //500km away
+        strokeColor:"#0000FF",
+        strokeOpacity:0.8,
+        strokeWeight:2,
+        fillColor:"#0000FF",
+        fillOpacity:0.4
+      });
+
+
       var infowindow = new google.maps.InfoWindow({
           content: 'Your guess'
       });
@@ -427,6 +448,10 @@ $scope.loginFacebook = function(){
 
       flightPath.setMap(map);
 
+
+
+
+
       $scope.map=map;
 
 
@@ -435,6 +460,11 @@ $scope.loginFacebook = function(){
       var actualGoogCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
       var userGoogCor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
       var distance_number = google.maps.geometry.spherical.computeDistanceBetween(actualGoogCoor, userGoogCor) / 1000;
+      if (distance_number<501) {
+        $scope.round_status = "Correct"
+      } else {
+        $scope.round_status = "Incorrect"
+      }
       distance = distance_number.toFixed(0);
       distance = numberWithCommas(distance);
       $scope.distance = distance;
@@ -494,8 +524,26 @@ $scope.loginFacebook = function(){
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope) {
+.controller('AccountCtrl', function($scope, $http) {
   $scope.settings = {
     enableFriends: true
   };
+
+  var currentUser = Parse.User.current();
+  var access_token = currentUser._serverData.authData.facebook.access_token;
+  var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
+
+  console.log(fb_prof_json_link);
+
+   $http.get(fb_prof_json_link).then(function(resp) {
+    console.log('Success', resp);
+    // For JSON responses, resp.data contains the result
+    $scope.profile_image = resp.data.picture.data.url;
+    $scope.username = resp.data.name;
+
+  }, function(err) {
+    console.error('ERR', err);
+    // err.status will contain the status code
+  })
+
 });
