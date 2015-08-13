@@ -10,7 +10,7 @@
 </ion-nav-buttons>
 <!-- END OF NAV BUTTONS -->
 
-  <ion-content>
+  <ion-content lazy-scroll>
 
    <ion-refresher
     pulling-text="Pull to refresh..."
@@ -36,32 +36,23 @@
         
 
         <!-- START OF IMAGE -->
-         <!-- <p class = "ion-locked" style = "margin-left:10px;">&nbsp;&nbsp;<strong>Guess to unlock</strong></p> -->
-              <div class="item item-image">
-              <img class = "image" src = "{{item.attributes.imageLink}}">
-              </div>
-            <!-- END OF IMAGE -->
+        <div class="item item-image">
+          <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
+        </div>
+        <!-- END OF IMAGE -->
 
             <!-- START OF BUTTONS -->
 
-             <div class = "row"> 
-
-               
-
-  <div class="col">    <center>        <a class="button button-icon icon ion-earth positive" href= "#/tab/guess/{{item.id}}/{{item.attributes.Lat}}/{{item.attributes.Long}}">
-                
-              </a></center></div>
-  <div class="col"><center><a class="button button-icon icon ion-heart ">  </a></center></div>
-
-    
-            </div>
+              <div class = "row"> 
+                <div class="col">    
+                  <center>        
+                    <a class="button button-icon icon ion-earth positive" href= "#/tab/guess/{{item.objectId}}/{{item.Lat}}/{{item.Long}}">
+                    </a>
+                  </center>
+                </div>
+              </div>
 
             <!-- END OF BUTTONS -->
-
-
-
-
-
 
       </ion-item>
 
@@ -75,6 +66,10 @@
       <i class = "ion-loop"></i> {{refresh_message}}</p>
   </center>
   <!-- End of get more images text -->
+
+<div class="spacer" style="width: 300px; height: 50px;"></div>
+
+
 
   </ion-content>
 </ion-view>

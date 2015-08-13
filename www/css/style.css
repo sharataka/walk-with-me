@@ -7,5 +7,37 @@
 
 .profile_pic{
 	border-radius: 50%;
+	height: 50px;
 }
 
+
+.login_image { 
+   position: relative; 
+   width: 100%; /* for IE 6 */
+   height: 1000px;
+}
+
+
+.fbbutton { 
+   position: absolute; 
+   top: 60px; 
+   left: 80px; 
+   width: 70%;
+   opacity: 0.9;
+}
+
+.createbutton { 
+   position: absolute; 
+   top: 230px; 
+   left: 80px; 
+   width: 70%;
+   opacity: 0.9;
+}
+
+.loginbutton { 
+   position: absolute; 
+   top: 430px; 
+   left: 80px; 
+   width: 70%;
+   opacity: 0.9;
+}

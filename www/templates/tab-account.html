@@ -1,19 +1,46 @@
-<ion-view view-title="Profile">
+<ion-view view-title="Profile" cache-view="false">
   <ion-content>
 
 
     <ion-list>
 
     <div class="spacer" style="width: 300px; height: 20px;"></div>
+    
+     
 
-    <img src = "{{profile_image}}" class = "profile_pic">
 
-    <h2>{{username}}</h2>
 
-<!--     <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle> -->
+    <div class = "row">
+    	<img src = "{{profile_image}}" class = "profile_pic">
+
+    	<h2>&nbsp; {{username}}</h2>
+	</div>
+
+  
+  <div class="spacer" style="width: 300px; height: 20px;"></div>
+
+  <!-- BEGINNING OF REPEATING -->
+    <ion-list>
+
+      
+
+      <ion-item collection-repeat="item in played_locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px;" >
+        
+
+        <!-- START OF IMAGE -->
+        <div class="item item-image">
+          <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
+        </div>
+        <!-- END OF IMAGE -->
+
+
+      </ion-item>
+
+    </ion-list>
+  <!-- END OF REPEATING -->
     
     </ion-list>
+
+
   </ion-content>
 </ion-view>

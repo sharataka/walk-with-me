@@ -1,9 +1,14 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $state, $ionicLoading) {
- 
-
-
+.controller('DashCtrl', function($scope, $state, $ionicLoading, Chats) {
+  
+  // window.localStorage.removeItem('locations');
+  
+  
+  $scope.windowWidth = window.innerWidth;
+  var currentUser = Parse.User.current();
+  $scope.locations = '';
+  $scope.refresh_message = "Answer the pictures above to get more...";
   $ionicLoading.show({
           content: 'Loading',
           animation: 'fade-in',
@@ -14,109 +19,137 @@ angular.module('starter.controllers', [])
         });
 
 
-  $scope.locations = '';
-
-
-  var currentUser = Parse.User.current();
-
-  $scope.refresh_message = "Answer the pictures above to get more...";
 
   if (currentUser) {
 
-      var CoorList = Parse.Object.extend("CoorList");
-      var query = new Parse.Query(CoorList);
-      query.descending("createdAt");
-      query.limit(7);
-      query.find({
-        success: function(locations) {
+    if ( (window.localStorage['locations']) == undefined ) {
+      $scope.locations = getlocations(currentUser);
+    }
 
-            var Result = Parse.Object.extend("Result");
-            var result_query = new Parse.Query(Result);
-            result_query.equalTo("user", currentUser.id);
-            result_query.find({
-              
-              success: function(results) {
+    else {
+        var testObject = JSON.parse(window.localStorage['locations']);
 
-                $scope.locations = locations;
-
-                // Get list of locations that user has answered
-                user_result = [];
-                for (var i = 0; i < results.length; i++) {
-                  var object = results[i];
-                  user_result.push(object.get('locationId'));
-                }
-
-                // Get list of all locations
-                location_array = [];
-                // Do something with the returned Parse.Object values
-                for (var i = 0; i < locations.length; i++) {
-                  var object = locations[i];
-                  location_array.push(object.id);
-                }
-
-                // Get matching locations
-                mathching_locations_index = [];
-                for (var i = user_result.length; i >= 0 ; i--) {
-                  var location_index = location_array.indexOf(user_result[i]);
-                  mathching_locations_index.push(location_index);
-                }
-
-                // Sort matching locations by descending order
-                mathching_locations_index.sort(function(a,b){return b-a});
-                
-                // Remove items from locations array of objects
-                for (var i = 0; i < mathching_locations_index.length; i++) {
-                  if (mathching_locations_index[i] > -1) {
-                    $scope.locations.splice(mathching_locations_index[i],1);
-                  }
-                }
-
-                if ($scope.locations.length == 0){
-                  $scope.refresh_message = "You've played all of our pictures. But we'll have more tomorrow so come back...";
-                }
-
-                $ionicLoading.hide();
-
-              },
-
-              error: function(error){
-                alert("Error: " + error.code + " " + error.message);
-                $ionicLoading.hide();
-              }
-
-            });
-
-
-
-
-
-
-        },
-        error: function(error) {
-          alert("Error: " + error.code + " " + error.message);
+        // If there are still items in localstorage
+        if (testObject.length > 0) {
+          $scope.locations = testObject;
           $ionicLoading.hide();
         }
-      });
 
-  } else {
+        // If there aren't items in localstorage, make a db call
+        else {
+          $scope.locations == getlocations(currentUser);
+        }
+        
+      }
+
+  } 
+  // END OF IF CURRENTUSER EXISTS
+
+
+  // IF THERE IS NO CURRENT USER
+  else {
       // show the signup or login page
       $ionicLoading.hide();
       $state.go('login');
   }
+  // END OF IF NO CURRENT USER
 
 
   //LOGOUT BUTTON
   $scope.logout = function(item,event){
     Parse.User.logOut();
+    window.localStorage.clear();
     $state.go('login');
   };
   // END OF LOGUT BUTTON
 
+  // REFRESH
   $scope.refresh = function () {
     window.location.reload(true);  
   };
+  // END OF REFRESH
+
+
+  // Make db call to get locations
+  function getlocations(currentUser){
+    var Result = Parse.Object.extend("Result");
+    var result_query = new Parse.Query(Result);
+    result_query.equalTo("user", currentUser.id);
+    result_query.find({
+
+    success: function(results) {
+
+        user_result = [];
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          user_result.push(object.get('locationId'));
+        }
+
+
+        var CoorList = Parse.Object.extend("CoorList");
+        var query = new Parse.Query(CoorList);
+        query.descending("createdAt");
+        query.notContainedIn("objectId", user_result);
+        query.limit(2);
+        query.find({
+                  
+        success: function(locations) {
+          
+          window.localStorage['locations'] = JSON.stringify(locations);
+          var testObject = JSON.parse(window.localStorage['locations']);
+          $scope.locations = testObject;
+
+            
+          if (locations.length == 0){
+            $scope.refresh_message = "You've played all of our pictures. But we'll have more tomorrow so come back...";
+          }
+
+          $ionicLoading.hide();
+            
+        },
+
+        error: function(error){
+          alert("Error: " + error.code + " " + error.message);
+          $ionicLoading.hide();
+        }
+
+      });
+
+      },
+      error: function(error) {
+        alert("Error: " + error.code + " " + error.message);
+        $ionicLoading.hide();
+      }
+    });
+    // END OF PARSE DB QUERY
+
+  }
+  // End of getlocations
+  
+})
+// END OF HOME CONTROLLER
+
+.controller('LoginFormCtrl', function($scope, $state, $cordovaFacebook) {
+$scope.data = {
+    'username' : '',
+    'password' : ''
+  };
   
 
+  //Click button to login
+  $scope.login = function(item,event){
+
+    Parse.User.logIn('sharataka', 'goldengun', {
+      success: function(user) {
+        $state.go('tab.dash');
+      },
+      error: function(user, error) {
+        alert(error.message + '. Make sure you enter the right username and password!');
+
+      }
+    });
+
+  };
 })
 
 .controller('LoginCtrl', function($scope, $state, $cordovaFacebook) {
@@ -208,51 +241,6 @@ $scope.loginFacebook = function(){
  
 };
 
-    // $scope.facebookfirebaselogin = function() {
-    //     $cordovaOauth.facebook("1602858929982444", ["email"]).then(function(result) {
-    //         auth.$authWithOAuthToken("facebook", result.access_token).then(function(authData) {
-    //             alert(JSON.stringify(authData));
-    //             alert('success');
-    //             $state.go('tab.dash');
-    //         }, function(error) {
-    //             alert('feailure');
-    //             console.error("ERROR: " + error);
-    //         });
-    //     }, function(error) {
-    //         alert('failure');
-    //         alert("ERROR: " + error);
-    //     });
-    // }
-
-  // Facebook login
-
-  //Login with facebook
-
-  //Get the facebook user_id
-
-  //Check to see whether a parse account exists with that user id
-    //If so, login that user alongside the facebook credentials
-
-    //If not, signup that user in Parse
-
-
-
-  // $scope.facebookfirebaselogin = function(item,event){
-
-  //   Parse.FacebookUtils.logIn(null, {
-  //     success: function(user) {
-  //       if (!user.existed()) {
-  //         alert("User signed up and logged in through Facebook!");
-  //       } else {
-  //         alert("User logged in through Facebook!");
-  //       }
-  //     },
-  //     error: function(user, error) {
-  //       alert("User cancelled the Facebook login or did not fully authorize.");
-  //     }
-  //   });
-
-  // };
 
 
 })
@@ -448,10 +436,6 @@ $scope.loginFacebook = function(){
 
       flightPath.setMap(map);
 
-
-
-
-
       $scope.map=map;
 
 
@@ -492,6 +476,18 @@ $scope.loginFacebook = function(){
       $scope.image = localStorage.image;
       $scope.answer = localStorage.answer;
 
+
+      // Remove object from locations localstorage, for use on home feed
+      var testObject = JSON.parse(window.localStorage['locations']);
+      for (var i = 0; i < testObject.length; i++) {
+        if ( testObject[i].objectId == $stateParams.location_id ) {
+          testObject.splice(i,1);
+        }
+      }
+      window.localStorage['locations'] = JSON.stringify(testObject);
+
+
+
     };
     
     google.maps.event.addDomListener(document.getElementById("map_result"), 'load', $scope.initialise());
@@ -520,23 +516,98 @@ $scope.loginFacebook = function(){
   };
 })
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
+.controller('ChatDetailCtrl', function($scope, $stateParams, $ionicLoading, Chats) {
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope, $http) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('AccountCtrl', function($scope, $http, $ionicLoading) {
+
+
+  $scope.windowWidth = window.innerWidth;
+  $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0,
+          duration: 5000
+        });
+
+
+  // $scope.moreDataCanBeLoaded = 'false';
+  // $scope.played_locations = [{imageLink: 'http://i.imgur.com/9lDdLYR.jpg'}, {imageLink: 'http://i.imgur.com/9lDdLYR.jpg'}];
 
   var currentUser = Parse.User.current();
+  getlocations(currentUser);
+  
+  
+  $scope.loadMore = function () {
+    getlocations(currentUser);
+    // $scope.$broadcast('scroll.infiniteScrollComplete');
+  }
+
+  $scope.$on('$stateChangeSuccess', function() {
+    $scope.loadMore();
+  });
+
+
+
+  // Make db call to get locations played
+  function getlocations(currentUser){
+    var Result = Parse.Object.extend("Result");
+    var result_query = new Parse.Query(Result);
+    result_query.equalTo("user", currentUser.id);
+    result_query.find({
+
+    success: function(results) {
+
+        user_result = [];
+        for (var i = 0; i < results.length; i++) {
+          var object = results[i];
+          user_result.push(object.get('locationId'));
+        }
+
+
+        var CoorList = Parse.Object.extend("CoorList");
+        var query = new Parse.Query(CoorList);
+        query.containedIn("objectId", user_result);
+        query.ascending("createdAt");
+        query.find({
+                  
+        success: function(locations) {
+          
+          window.localStorage['played_locations'] = JSON.stringify(locations);
+          var testObject = JSON.parse(window.localStorage['played_locations']);
+          $scope.played_locations = testObject;
+      
+          $ionicLoading.hide();
+            
+        },
+
+        error: function(error){
+          alert("Error: " + error.code + " " + error.message);
+          $ionicLoading.hide();
+        }
+
+      });
+
+      },
+      error: function(error) {
+        alert("Error: " + error.code + " " + error.message);
+        $ionicLoading.hide();
+      }
+    });
+    // END OF PARSE DB QUERY
+
+  }
+  // End of getlocations
+
+
+  // FACEBOOK STUFF
   var access_token = currentUser._serverData.authData.facebook.access_token;
   var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
 
-  console.log(fb_prof_json_link);
-
    $http.get(fb_prof_json_link).then(function(resp) {
-    console.log('Success', resp);
     // For JSON responses, resp.data contains the result
     $scope.profile_image = resp.data.picture.data.url;
     $scope.username = resp.data.name;
@@ -545,5 +616,6 @@ $scope.loginFacebook = function(){
     console.error('ERR', err);
     // err.status will contain the status code
   })
+  // End of facebook stuff
 
 });

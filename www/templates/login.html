@@ -1,81 +1,20 @@
 
 
-<ion-view view-title="Take the Tent" hide-nav-bar="true">
+<ion-view view-title="Home" hide-nav-bar="true">
   <ion-content>
 
 
-        <form>
-            
+    <img class = "login_image" src = "http://i.imgur.com/9lDdLYR.jpg">
+    
+    <button class="button button-positive button ion-social-facebook fbbutton" on-touch="loginFacebook()"> &nbsp; Log in with Facebook</button>
 
+    <a href="#/signup" class="button button-stable button  createbutton">
+        Create an account
+    </a>
 
-
-      
-    <!-- START OF IMAGE -->
-      <ion-item style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px;" >
-        
-        
-              <div class="item item-image">
-                <img class = "image" src = "http://i.imgur.com/9lDdLYR.jpg">
-                <h1 style = "font-size:45px;">
-                <span>
-                    Take the Tent
-                    <br />
-                    <span class='spacer'></span>Where in the world are you?</small>
-                </span>
-            </h1>
-              </div>
-            
-        </ion-item>
-<!-- END OF IMAGE -->
-        
-        <!-- Facebook login -->
-        <center>
-            <p><p>
-            <button class="button button-positive button-large ion-social-facebook" on-touch="loginFacebook()"> &nbsp; Log in with Facebook</button>
-        </center>
-
-        
-        <div class="spacer" style="width: 300px; height: 20px;"></div>
-        
-          <center>
-            <p style = "color:grey; font-style: italic;">
-              or
-          </center>
-
-        <div class="spacer" style="width: 300px; height: 20px;"></div>
-            
-        <!-- Input form -->
-        <ion-list>
-            <label class="item item-input">
-                <span class="input-label">Username</span>
-                <input type="text" placeholder="" ng-model="data.username" ng-change="search()">
-            </label>
-            
-            <label class="item item-input">
-                <span class="input-label">Password</span>
-                <input type="password" placeholder="" ng-model="data.password" ng-change="search()">
-            </label>
-        </ion-list>
-        <!-- End of input form -->
-            
-            
-
-        <div class="spacer" style="width: 300px; height: 30px;"></div>
-
-        <center>
-
-        <!-- Email login -->
-        <button class="button button-outline button-large button-positive" on-touch="login()">Log in</button>
-
-        <div class="spacer" style="width: 300px; height: 20px;"></div>
-
-        <p>
-        <a href="#/signup" class="button button-positive button-clear  ">
-            Or create an account
-        </a>
-        </center>
-        
-        </form>
+    <a href="#/loginform" class="button button-stable button loginbutton">
+        Log in
+    </a>
 
 
 
