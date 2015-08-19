@@ -10,14 +10,14 @@
             
         <!-- Input form -->
         <ion-list>
-            <label class="item item-input">
+            <label class="item item-input item-floating-label">
                 <span class="input-label">Username</span>
-                <input type="text" placeholder="" ng-model="data.username" ng-change="search()">
+                <input type="text" placeholder="Username" ng-model="data.username" ng-change="search()">
             </label>
             
-            <label class="item item-input">
+            <label class="item item-input item-floating-label">
                 <span class="input-label">Password</span>
-                <input type="password" placeholder="" ng-model="data.password" ng-change="search()">
+                <input type="password" placeholder="Password" ng-model="data.password" ng-change="search()">
             </label>
         </ion-list>
         <!-- End of input form -->
@@ -29,7 +29,9 @@
         <center>
 
         <!-- Email login -->
-        <button class="button button-outline button-positive" on-touch="login()">Log in</button>
+        <button class="button button-outline button-positive" on-touch="login()" style = "width:70%;">
+            Log in
+        </button>
 
         <div class="spacer" style="width: 300px; height: 20px;"></div>
 

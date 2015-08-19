@@ -1,20 +1,91 @@
 
 
-<ion-view view-title="Home" hide-nav-bar="true">
-  <ion-content>
+<ion-view view-title="Home" hide-nav-bar="true" >
+  <ion-content scroll="false">
 
+<ion-slide-box>
 
-    <img class = "login_image" src = "http://i.imgur.com/9lDdLYR.jpg">
     
-    <button class="button button-positive button ion-social-facebook fbbutton" on-touch="loginFacebook()"> &nbsp; Log in with Facebook</button>
+<!-- 1st box: we'll give you a place -->
+  <ion-slide>
+    <img class = "login_image" src = "http://proof.nationalgeographic.com/files/2014/11/PastedGraphic-2.jpg" style = "height: {{height}}px;">
+    
+<!--     <div class = "logintitle" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            Step 1
+        </span>
+    </div> -->
 
-    <a href="#/signup" class="button button-stable button  createbutton">
-        Create an account
+    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            I'll show you a picture &nbsp; <i class ="ion-chevron-right"></i>
+        </span>
+    </div>
+  </ion-slide>
+<!-- End of 1st box -->
+
+
+<!-- 2nd box: guess -->
+  <ion-slide>
+    <img class = "login_image" src = "http://i.imgur.com/J18GMMF.jpg" style = "height: {{height}}px;">
+    
+
+    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            Guess where it was taken &nbsp; <i class ="ion-chevron-right"></i>
+        </span>
+    </div>
+  </ion-slide>
+<!-- End of 2nd box -->
+
+<!-- 3rd box: Close -->
+  <ion-slide>
+    <img class = "login_image" src = "http://i.imgur.com/fxU9OT7.jpg" style = "height: {{height}}px;">
+    
+
+    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            I'll show you how close you are &nbsp; <i class ="ion-chevron-right"></i>
+        </span>
+    </div>
+  </ion-slide>
+<!-- 3rd of 2nd box -->
+
+
+
+<!-- 3rd box: signup -->
+  <ion-slide>
+        <img class = "login_image" src = "http://proof.nationalgeographic.com/files/2015/07/prod-yourshot-345431-6054565.jpg" style = "height: {{height}}px;">
+    
+    <div class = "logintitle" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            Take the Tent
+        </span>
+    </div>
+
+    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            Where in the world are you?
+        </span>
+    </div>
+
+    <button class="button button-positive button ion-social-facebook fbbutton" on-tap="loginFacebook()" style = "left:{{left_margin}}px">
+        &nbsp; Log in with Facebook
+    </button>
+
+    <a href="#/signup" class="button button-stable button  ion-person-add createbutton" style = "left:{{left_margin}}px">
+        &nbsp; Create an account
     </a>
 
-    <a href="#/loginform" class="button button-stable button loginbutton">
-        Log in
+    <a href="#/loginform" class="button button-stable ion-log-in button loginbutton" style = "left:{{left_margin}}px">
+        &nbsp; Log in
     </a>
+  </ion-slide>
+<!-- End of 3rd box -->
+
+
+
+</ion-slide-box>
 
 
 

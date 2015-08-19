@@ -7,19 +7,19 @@
         <form>
             <ion-list>
                 
-                <label class="item item-input">
+                <label class="item item-input item-floating-label">
                     <span class="input-label">Username</span>
-                    <input type="text" placeholder="" ng-model="data.username" ng-change="search()">
+                    <input type="text" placeholder="Username" ng-model="data.username" ng-change="search()">
                 </label>
 
-                <label class="item item-input">
+                <label class="item item-input item-floating-label">
                     <span class="input-label">Password</span>
-                    <input type="password" placeholder="" ng-model="data.password" ng-change="search()">
+                    <input type="password" placeholder="Password" ng-model="data.password" ng-change="search()">
                 </label>
 
-                <label class="item item-input">
+                <label class="item item-input item-floating-label">
                     <span class="input-label">Email</span>
-                    <input type="text" placeholder="optional" ng-model="data.email" ng-change="search()">
+                    <input type="text" placeholder="Email (optional)" ng-model="data.email" ng-change="search()">
                 </label>
                 
             </ion-list>
@@ -27,7 +27,7 @@
             <div class="spacer" style="width: 300px; height: 30px;"></div>
 
             <center>
-                <button class="button button-outline button-positive " on-touch="signup()">Create an account</button>
+                <button class="button button-outline button-positive " style = "width:70%;" on-touch="signup()">Create an account</button>
             </center>
         </form>
 

@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter.services', 'ionicLazyLoad', 'firebase', 'ngCordovaOauth'])
+angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter.services', 'ionicLazyLoad', 'ngCordovaOauth'])
 
 
 
@@ -38,6 +38,12 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
       url: '/login',
       templateUrl: 'templates/login.html',
       controller: 'LoginCtrl'
+    })
+
+    .state('fullscreen', {
+      url: '/fullscreen/{objectId}/{actual_lat}/{actual_lng}/{image_Link}',
+      templateUrl: 'templates/fullscreen.html',
+      controller: 'FullscreenCtrl'
     })
 
     .state('loginform', {

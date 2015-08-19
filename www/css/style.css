@@ -14,30 +14,62 @@
 .login_image { 
    position: relative; 
    width: 100%; /* for IE 6 */
-   height: 1000px;
+   /*height: 100%;*/
 }
 
 
 .fbbutton { 
    position: absolute; 
-   top: 60px; 
-   left: 80px; 
+   bottom: 170px; 
    width: 70%;
    opacity: 0.9;
 }
 
 .createbutton { 
    position: absolute; 
-   top: 230px; 
-   left: 80px; 
+   bottom: 100px; 
    width: 70%;
    opacity: 0.9;
 }
 
 .loginbutton { 
    position: absolute; 
-   top: 430px; 
-   left: 80px; 
+   bottom: 30px; 
    width: 70%;
    opacity: 0.9;
+}
+
+.logintitle {
+   position: absolute; 
+   top: 135px; 
+   width: 100%;
+   color:white;
+}
+
+.loginsubheader{
+   position: absolute; 
+   top: 200px; 
+   width: 100%;
+   color:white;
+}
+
+
+.logintitle span { 
+   color: white; 
+   font: bold 28px/20px Helvetica, Sans-Serif;
+   font-family: 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+   letter-spacing: -1px;  
+   background: rgb(0, 0, 0); /* fallback color */
+   background: rgba(0, 0, 0, 0.7);
+   padding: 10px; 
+}
+
+.loginsubheader span {
+   color: white; 
+   font: bold 18px/20px Helvetica, Sans-Serif;
+   font-family: 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+   letter-spacing: -1px;  
+   background: rgb(0, 0, 0); /* fallback color */
+   background: rgba(0, 0, 0, 0.7);
+   padding: 10px; 
 }

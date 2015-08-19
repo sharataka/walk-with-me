@@ -19,6 +19,14 @@
 
   <div class="spacer" style="width: 300px; height: 20px;"></div>
 
+  <!-- Get more images text -->
+  <center>
+    <p style = "color:grey; font-style: italic;">
+      <i class = "ion-location"></i> Tap on a picture to guess
+    </p>
+  </center>
+  <!-- End of get more images text -->
+
 <!--   <center>
     <a class="button button-outline button-positive" href = "">
       Tap to see places you've answered
@@ -32,38 +40,31 @@
 
       
 
-      <ion-item collection-repeat="item in locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px;" >
+      <ion-item collection-repeat="item in locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 0px;" >
         
 
         <!-- START OF IMAGE -->
         <div class="item item-image">
-          <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
+          <a on-tap="fullscreenImage($index)">
+            <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
+          </a>
         </div>
         <!-- END OF IMAGE -->
 
-            <!-- START OF BUTTONS -->
-
-              <div class = "row"> 
-                <div class="col">    
-                  <center>        
-                    <a class="button button-icon icon ion-earth positive" href= "#/tab/guess/{{item.objectId}}/{{item.Lat}}/{{item.Long}}">
-                    </a>
-                  </center>
-                </div>
-              </div>
-
-            <!-- END OF BUTTONS -->
+        
 
       </ion-item>
 
     </ion-list>
   <!-- END OF REPEATING -->
 
+<div class="spacer" style="width: 300px; height: 30px;"></div>
 
   <!-- Get more images text -->
   <center>
     <p style = "color:grey; font-style: italic;">
-      <i class = "ion-loop"></i> {{refresh_message}}</p>
+      <i class = "ion-loop"></i> {{refresh_message}}
+    </p>
   </center>
   <!-- End of get more images text -->
 

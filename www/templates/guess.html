@@ -2,16 +2,19 @@
   <ion-content scroll="false">
 
 
-<div class="spacer" style="width: 300px; height: 20px;"></div>
+<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
 
 <!-- START OF CARD -->
 
 
   <!-- START OF IMAGE -->
-  <div id = "map" data-tap-disabled="true"></div>
+  <div id = "map" data-tap-disabled="true" style = "height:{{heightWidth}}px;"></div>
   <!-- END OF IMAGE -->
 
-
+      <a on-touch="onTouch()" class="button button-stable ion-ios-location button loginbutton" style = "left:{{left_margin}}px">
+        Submit
+    </a>
+<!-- 
   <div class = "row"> 
 
     <div class="col">    
@@ -22,7 +25,7 @@
       </center>
     </div>
   
-  </div>
+  </div> -->
 
   <!-- START OF BUTTONS -->
 <!--   <div class="item tabs tabs-secondary tabs-icon-left">

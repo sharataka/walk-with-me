@@ -6,6 +6,7 @@ angular.module('starter.controllers', [])
   
   
   $scope.windowWidth = window.innerWidth;
+  $scope.heightWidth = window.innerHeight - 100;
   var currentUser = Parse.User.current();
   $scope.locations = '';
   $scope.refresh_message = "Answer the pictures above to get more...";
@@ -44,6 +45,7 @@ angular.module('starter.controllers', [])
 
   } 
   // END OF IF CURRENTUSER EXISTS
+
 
 
   // IF THERE IS NO CURRENT USER
@@ -90,7 +92,7 @@ angular.module('starter.controllers', [])
         var query = new Parse.Query(CoorList);
         query.descending("createdAt");
         query.notContainedIn("objectId", user_result);
-        query.limit(2);
+        query.limit(8);
         query.find({
                   
         success: function(locations) {
@@ -125,6 +127,11 @@ angular.module('starter.controllers', [])
 
   }
   // End of getlocations
+
+    $scope.fullscreenImage = function(item_index){
+      // $state.go('fullscreen', {objectId:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long , image_Link: encodeURI($scope.locations[item_index].imageLink) })
+      $state.go('tab.guess', {location_id:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long })
+  };
   
 })
 // END OF HOME CONTROLLER
@@ -154,7 +161,12 @@ $scope.data = {
 
 .controller('LoginCtrl', function($scope, $state, $cordovaFacebook) {
 
-// var auth = $firebaseAuth(fb);
+// Calculate left margin on buttons
+var buttonlength = .7 * window.innerWidth;
+$scope.left_margin = (window.innerWidth - buttonlength) / 2;
+
+$scope.height = window.innerHeight;
+
 
 // Data bind the username and password fields
 $scope.data = {
@@ -288,6 +300,11 @@ $scope.loginFacebook = function(){
 
 .controller('GuessCtrl', function($scope, $state, $stateParams) {
 
+  // Calculate left margin on buttons
+  var buttonlength = .7 * window.innerWidth;
+  $scope.left_margin = (window.innerWidth - buttonlength) / 2;
+  $scope.heightWidth = window.innerHeight;
+
   //Click button to make a guess
   $scope.onTouch = function(item,event){
     if ($scope.coordinates == null) {
@@ -345,7 +362,8 @@ $scope.loginFacebook = function(){
   google.maps.event.addDomListener(document.getElementById("map"), 'load', $scope.initialise());
 
       // DISPLAY IMAGE AGAIN
-      
+    
+
       var CoorList = Parse.Object.extend("CoorList");
       var query = new Parse.Query(CoorList);
       query.equalTo("objectId", $stateParams.location_id);
@@ -376,7 +394,8 @@ $scope.loginFacebook = function(){
       // score = score.toFixed(0);
       // score = numberWithCommas(score);    
       // $scope.score = score;
-
+    $scope.windowWidth = window.innerWidth;
+    
     $scope.initialise = function() {
       var guessCoor = new google.maps.LatLng(localStorage.userLat, localStorage.userLong);
       var actualCoor = new google.maps.LatLng($stateParams.actual_lat, $stateParams.actual_lng);
@@ -520,6 +539,22 @@ $scope.loginFacebook = function(){
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
+.controller('FullscreenCtrl', function($scope, $stateParams, $ionicLoading) {
+  // Calculate left margin on buttons
+  var buttonlength = .7 * window.innerWidth;
+  $scope.left_margin = (window.innerWidth - buttonlength) / 2;
+
+  $scope.height = window.innerHeight;
+
+  $scope.objectId = $stateParams.objectId;
+  $scope.actual_lat = $stateParams.actual_lat;
+  $scope.actual_lng = $stateParams.actual_lng;
+  $scope.imageLink = $stateParams.image_Link;
+
+  // console.log($ionicHistory.backView());
+
+})
+
 .controller('AccountCtrl', function($scope, $http, $ionicLoading) {
 
 
@@ -533,9 +568,6 @@ $scope.loginFacebook = function(){
           duration: 5000
         });
 
-
-  // $scope.moreDataCanBeLoaded = 'false';
-  // $scope.played_locations = [{imageLink: 'http://i.imgur.com/9lDdLYR.jpg'}, {imageLink: 'http://i.imgur.com/9lDdLYR.jpg'}];
 
   var currentUser = Parse.User.current();
   getlocations(currentUser);
@@ -605,10 +637,12 @@ $scope.loginFacebook = function(){
 
   // FACEBOOK STUFF
   var access_token = currentUser._serverData.authData.facebook.access_token;
+  console.log(currentUser._serverData.authData.facebook);
   var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
 
    $http.get(fb_prof_json_link).then(function(resp) {
     // For JSON responses, resp.data contains the result
+    console.log(resp.data);
     $scope.profile_image = resp.data.picture.data.url;
     $scope.username = resp.data.name;
 
