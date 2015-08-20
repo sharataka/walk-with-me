@@ -2,29 +2,34 @@
   <ion-content>
 
 
-<div class="spacer" style="width: 300px; height: 20px;"></div>
+<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
 
 
 <!-- Show whether the answer is correct -->
 <center>
   
-  <span ng-if= "round_status === 'Correct'">
-    <i class ="ion-checkmark"></i> Correct!
-  </span>
-  
-  <span ng-if= "round_status === 'Incorrect'">
-    <i class ="ion-close"></i> Incorrect. Take your tent to the next picture.
-  </span>  
+
 
 </center>
 <!-- End of showing the result -->
 
 
-<div class="spacer" style="width: 300px; height: 20px;"></div>
+<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
 
 
 <!-- DIV FOR MAP -->
-  <div id = "map_result" data-tap-disabled="true"></div>
+  <div id = "map_result" data-tap-disabled="true" class = "image"></div>
+        <h1>
+
+          <span ng-if= "round_status === 'Correct'">
+            &nbsp;<i class ="ion-checkmark"></i> &nbsp;Correct!
+          </span>
+          
+          <span ng-if= "round_status === 'Incorrect'">
+            &nbsp;<i class ="ion-close"></i> &nbsp;Incorrect.
+          </span>  
+
+    </h1>
 <!-- END OF MAP DIV -->
 
 <!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
@@ -49,14 +54,39 @@
 
   <div class = "row"> 
 
-    <div class="col">    
-      <center>        
-        <a class="button button-icon icon ion-map" href = "#/dash">
-          Next
-        </a>
-      </center>
-    </div>
-  
+   
+
+
+        <div class="col col-33">
+            <center>
+              <a class="button button-icon ion-ios-information-outline" href = "">
+                &nbsp;Info
+              </a>
+            </center>
+        </div>
+
+        <div class="col col-33">
+            <center>
+              <a class="button button-icon ion-images" href = "" on-tap = "morePictures()">
+                &nbsp;Pictures
+              </a>
+            </center>
+        </div>
+
+        <div class="col col-33">
+            <center>
+              <a class="button button-icon" href = "#/dash">
+                Next &nbsp; <i class ="ion-chevron-right"></i>
+              </a>
+            </center>
+        </div>
+
+
+
+
+
+
+
   </div>
 
   </div>

@@ -212,13 +212,12 @@ $scope.loginFacebook = function(){
       }
     });
  
-  } 
+  }
+
   //Native Login
   else {
- 
+  
     $cordovaFacebook.login(["public_profile", "email"]).then(function(success){
- 
-      console.log(success);
  
       //Need to convert expiresIn format from FB to date
       var expiration_date = new Date();
@@ -246,7 +245,7 @@ $scope.loginFacebook = function(){
       });
  
     }, function(error){
-      console.log(error);
+      alert('error');
     });
  
   }
@@ -494,6 +493,10 @@ $scope.loginFacebook = function(){
 
       $scope.image = localStorage.image;
       $scope.answer = localStorage.answer;
+
+       $scope.morePictures = function () {
+          window.open('https://www.google.com/images?q=' + $scope.answer +'', 'blank');
+        }
 
 
       // Remove object from locations localstorage, for use on home feed
