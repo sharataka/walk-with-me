@@ -67,7 +67,11 @@ angular.module('starter.controllers', [])
 
   // REFRESH
   $scope.refresh = function () {
-    window.location.reload(true);  
+        setTimeout(function () {
+          window.location.reload(true); 
+    }, 750);
+
+
   };
   // END OF REFRESH
 
@@ -297,7 +301,7 @@ $scope.loginFacebook = function(){
 
 })
 
-.controller('GuessCtrl', function($scope, $state, $stateParams) {
+.controller('GuessCtrl', function($scope, $state, $stateParams, $ionicPopup) {
 
   // Calculate left margin on buttons
   var buttonlength = .7 * window.innerWidth;
@@ -307,7 +311,10 @@ $scope.loginFacebook = function(){
   //Click button to make a guess
   $scope.onTouch = function(item,event){
     if ($scope.coordinates == null) {
-      alert('Please tap on the map to make a guess');
+      $ionicPopup.alert({
+                        title: "You haven't made a guess",
+                        content: "Tap on the map to drop a pin and make a guess."
+                    })
     }
     else {
       $state.go('tab.result', { location_id: $stateParams.location_id, actual_lat:$stateParams.actual_lat, actual_lng:$stateParams.actual_lng });
@@ -498,6 +505,11 @@ $scope.loginFacebook = function(){
           window.open('https://www.google.com/images?q=' + $scope.answer +'', 'blank');
         }
 
+        $scope.moreInfo = function () {
+          window.open('https://www.google.com/search?q=' + $scope.answer +'', 'blank');
+        }
+
+
 
       // Remove object from locations localstorage, for use on home feed
       var testObject = JSON.parse(window.localStorage['locations']);
@@ -542,6 +554,29 @@ $scope.loginFacebook = function(){
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
+.controller('OfflineCtrl', function($scope, $stateParams, $ionicPopup) {
+    
+    $ionicPopup.alert({
+                    title: "You're offlne!",
+                    content: "Make sure you're connected to the internet and then tap the button to get going again!"
+                })
+
+    $scope.tryAgain = function(item,event){
+     if(navigator.onLine){
+        window.location.href = '#/dash';
+     } 
+     else {
+      $ionicPopup.alert({
+                      title: "You're still not connected!",
+                      content: "Make sure you're connected to the internet and then tap the button to get going again!"
+                  })
+
+     }
+
+    }
+
+})
+
 .controller('FullscreenCtrl', function($scope, $stateParams, $ionicLoading) {
   // Calculate left margin on buttons
   var buttonlength = .7 * window.innerWidth;
@@ -554,14 +589,45 @@ $scope.loginFacebook = function(){
   $scope.actual_lng = $stateParams.actual_lng;
   $scope.imageLink = $stateParams.image_Link;
 
-  // console.log($ionicHistory.backView());
+})
+
+.controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory) {
+  
+  // Calculate left margin on buttons
+  var buttonlength = .7 * window.innerWidth;
+  $scope.left_margin = (window.innerWidth - buttonlength) / 2;
+
+  $scope.height = window.innerHeight;
+
+  $scope.objectId = $stateParams.objectId;
+  $scope.imageLink = $stateParams.image_Link;
+  $scope.answer = $stateParams.answer;
+  $scope.icon = $stateParams.icon;
+  $scope.distance =  Number($stateParams.distance).toFixed(0);
+
+  $scope.goToAccount = function(item,event) {
+    $state.go('tab.account');
+  }
 
 })
 
-.controller('AccountCtrl', function($scope, $http, $ionicLoading) {
+.controller('AccountCtrl', function($state, $scope, $http, $ionicLoading, $stateParams) {
 
+
+    // REFRESH
+  $scope.refresh = function (){
+        setTimeout(function () {
+          window.location.reload(true); 
+    }, 750);
+
+      };
+      // end of refresh
 
   $scope.windowWidth = window.innerWidth;
+  $scope.leftMarginProfilePicture = window.innerWidth / 2 - 25;
+  $scope.windowDividedBy3 = $scope.windowWidth / 3;
+
+
   $ionicLoading.show({
           content: 'Loading',
           animation: 'fade-in',
@@ -575,17 +641,6 @@ $scope.loginFacebook = function(){
   var currentUser = Parse.User.current();
   getlocations(currentUser);
   
-  
-  $scope.loadMore = function () {
-    getlocations(currentUser);
-    // $scope.$broadcast('scroll.infiniteScrollComplete');
-  }
-
-  $scope.$on('$stateChangeSuccess', function() {
-    $scope.loadMore();
-  });
-
-
 
   // Make db call to get locations played
   function getlocations(currentUser){
@@ -597,10 +652,33 @@ $scope.loginFacebook = function(){
     success: function(results) {
 
         user_result = [];
+        $scope.distances = [];
+        $scope.correct = 0;
+        $scope.incorrect = 0;
+        $scope.best_guess = 50000;
         for (var i = 0; i < results.length; i++) {
           var object = results[i];
           user_result.push(object.get('locationId'));
+          
+          // Counts wins and losses
+          if (object.get('distance') < 501) {
+            $scope.correct = $scope.correct + 1;
+          } else {
+            $scope.incorrect = $scope.incorrect +1 ;
+          }
+          // End of counting wins and losses
+
+          // Best guess
+          if (object.get('distance') < $scope.best_guess) {
+            $scope.best_guess = object.get('distance');
+            $scope.best_guess = $scope.best_guess.toFixed(0);
+          }
+          // End of best guess
+
+          $scope.distances.push(object.get('distance'));
         }
+
+      
 
 
         var CoorList = Parse.Object.extend("CoorList");
@@ -614,7 +692,6 @@ $scope.loginFacebook = function(){
           window.localStorage['played_locations'] = JSON.stringify(locations);
           var testObject = JSON.parse(window.localStorage['played_locations']);
           $scope.played_locations = testObject;
-      
           $ionicLoading.hide();
             
         },
@@ -638,14 +715,62 @@ $scope.loginFacebook = function(){
   // End of getlocations
 
 
+  // TAP TO GO TO FULLSCREEN
+  $scope.fullscreenImage = function (item,event) {
+    var imageObject = $scope.played_locations[item];
+    var distance = $scope.distances[item];
+    if (distance < 501) {
+      var icon = 'checkmark';
+    } else {
+      var icon = 'close';
+    }
+    $state.go('resultfullscreen', {image_Link: encodeURI(imageObject.imageLink), answer: imageObject.Answer, distance: distance, icon: icon }) 
+  }
+  // END OF BUTTON TO GO FULLSCREEN
+
+
+
+  $scope.deletedata = function () {
+    var Result = Parse.Object.extend("Result");
+    var result_query = new Parse.Query(Result);
+    result_query.equalTo("user", currentUser.id);
+    result_query.find({
+
+    success: function(results) {
+
+        
+        for (var i = 0; i < results.length; i++) {
+
+                results[i].destroy({
+                  success: function(myObject) {
+                    // The object was deleted from the Parse Cloud.
+                    console.log('success');
+                  },
+                  error: function(myObject, error) {
+                    // The delete failed.
+                    // error is a Parse.Error with an error code and message.
+                    console.log('error');
+                  }
+                });
+        }
+
+      },
+      error: function(error) {
+        alert("Error: " + error.code + " " + error.message);
+        $ionicLoading.hide();
+      }
+    });
+    // END OF PARSE DB QUERY
+  }
+
   // FACEBOOK STUFF
   var access_token = currentUser._serverData.authData.facebook.access_token;
-  console.log(currentUser._serverData.authData.facebook);
+  // console.log(currentUser._serverData.authData.facebook);
   var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
 
    $http.get(fb_prof_json_link).then(function(resp) {
     // For JSON responses, resp.data contains the result
-    console.log(resp.data);
+    // console.log(resp.data);
     $scope.profile_image = resp.data.picture.data.url;
     $scope.username = resp.data.name;
 

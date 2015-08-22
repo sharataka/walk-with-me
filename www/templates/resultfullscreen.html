@@ -1,0 +1,24 @@
+
+
+<ion-view view-title="<i class ='ion-{{icon}}'></i> &nbsp;{{distance}} km away" hide-back-button = "false" >
+
+     <ion-nav-buttons side="left">
+  <a on-tap = "goToAccount()" class="button button-clear">
+    < Back
+  </a>
+</ion-nav-buttons>
+
+
+  <ion-content scroll="false">
+
+
+    <img class = "login_image" src = "{{imageLink}}" style = "height: {{height}}px;">
+
+    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; ">
+        <span>
+            {{answer}}
+        </span>
+    </div>
+
+  </ion-content>
+</ion-view>

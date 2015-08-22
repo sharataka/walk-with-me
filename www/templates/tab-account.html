@@ -1,49 +1,90 @@
-<ion-view view-title="Profile" cache-view="false">
+<ion-view view-title="{{username}}" cache-view="true">
+
+     <ion-nav-buttons side="right">
+  <a on-tap = "deletedata()" class="button button-assertive">
+    <i class = "ion-trash-a"> Delete</i>
+  </a>
+</ion-nav-buttons>
+
   <ion-content>
 
+   <ion-refresher
+    pulling-text="Pull to refresh..."
+    on-refresh="refresh()">
+  </ion-refresher>
 
-    <ion-list>
 
-    <div class="spacer" style="width: 300px; height: 20px;"></div>
+    <img class = "profile_background_image" src = "http://proof.nationalgeographic.com/files/2014/11/PastedGraphic-2.jpg" style = "height: {{height}}px;">
     
-     
+
+    <img src = "{{profile_image}}" class = "profile_pic" style = "left:{{leftMarginProfilePicture}}px;">
 
 
 
-    <div class = "row">
+  <div class = "row">
+      
+      <div class="col col-33">
+        <center><h4>{{correct}} <i class ="ion-checkmark"></i></h4></center>
+        <center><p>Correct</p></center>
+      </div>
 
-      <div class = "col col-20">
-    	<img src = "{{profile_image}}" class = "profile_pic">
-    </div>
-    <div class = "col">
-    	<h2>&nbsp; {{username}}</h2>
-    </div>
-	</div>
+      <div class="col col-33">
+        <center><h4>{{incorrect}} <i class ="ion-close"></i></h4></center>
+        <center><p>Incorrect</p></center>
+      </div>
 
+      <div class="col col-33">
+        <center><h4>{{best_guess}} km <i class ="ion-ios-location"></i></h4></center>
+        <center><p>Best Guess</p></center>
+      </div>
+
+  </div>
   
-  <div class="spacer" style="width: 300px; height: 20px;"></div>
+  <!-- RESULTS TEXT   -->
+  <div class = "row"> 
+      <h4>&nbsp;<i class = "ion-ios-location"></i> Results</h4>
+  </div>
+  <hr noshade>
+  <!-- END OF RESULTS TEXT -->
 
   <!-- BEGINNING OF REPEATING -->
-    <ion-list>
 
-      
+    <div class="row" style = "padding: 0px; "ng-repeat="image in played_locations" ng-if="$index % 3 === 0">
+        
+        <div class="col col-33" ng-if="$index < played_locations.length" style = "padding:1px;">
+            <img src = "{{played_locations[$index].imageLink}}" on-tap = "fullscreenImage($index)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+        </div>
+        
+        <div class="col col-33" ng-if="$index + 1 < played_locations.length" style = "padding:1px;">
+            <img src = "{{played_locations[$index + 1].imageLink}}" on-tap = "fullscreenImage($index + 1)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+        </div>
+        
+        <div class="col col-33" ng-if="$index + 2 < played_locations.length" style = "padding:1px;">
+            <img src = "{{played_locations[$index + 2].imageLink}}" on-tap = "fullscreenImage($index + 2)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+        </div>
 
-      <ion-item collection-repeat="item in played_locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px;" >
+    </div>
+
+
+<!-- BEGINNING OF FEED -->
+<!--     <ion-list>
+
+      <ion-item collection-repeat="item in played_locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 0px; border:0px;" >
         
 
-        <!-- START OF IMAGE -->
+        START OF IMAGE
         <div class="item item-image">
           <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
         </div>
         <!-- END OF IMAGE -->
 
 
-      </ion-item>
+<!--       </ion-item>
 
-    </ion-list>
-  <!-- END OF REPEATING -->
+    </ion-list> -->
+<!-- END OF FEED -->
     
-    </ion-list>
+
 
 
   </ion-content>

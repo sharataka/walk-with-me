@@ -31,15 +31,19 @@
     
     <script src="js/ionic-image-lazy-load.js"></script>    
 
-    <script src="js/localforage.min.js"></script>
 
+<!-- START OF CONNECTIVITY CHECK -->
 <script type="text/javascript">
- if(navigator.onLine){
-  console.log('online');
- } else {
-  console.log('offline');
- }
+    // Connectivity check
+     if(navigator.onLine){
+     } 
+     else {
+      window.location.href = '#/offline';
+     }
  </script>
+
+
+ <!-- END OF CONNECTIVITY CHECK -->
     
 
   <script type="text/javascript">

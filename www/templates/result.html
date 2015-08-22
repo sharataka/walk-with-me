@@ -2,20 +2,6 @@
   <ion-content>
 
 
-<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
-
-
-<!-- Show whether the answer is correct -->
-<center>
-  
-
-
-</center>
-<!-- End of showing the result -->
-
-
-<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
-
 
 <!-- DIV FOR MAP -->
   <div id = "map_result" data-tap-disabled="true" class = "image"></div>
@@ -32,65 +18,60 @@
     </h1>
 <!-- END OF MAP DIV -->
 
-<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
 
-<!-- START OF IMAGE CARD -->
-    <div class="list card" style = "box-shadow:0 1px 3px rgba(0, 0, 0, 0); margin-left: 0px; margin-right: 0px; margin-top: 0px; margin-bottom: 0px;">
   
-  <!-- START OF IMAGE -->
-  
-    <img class = "image" src = "{{image}}" style = "height: {{windowWidth}}px;">
+<!-- START OF IMAGE -->
+  <img class = "image" src = "{{image}}" style = "height: {{windowWidth}}px;">
 
-      <h1>
-    	 <span>
-    		&nbsp;{{distance}} km away
+    <h1 style = "top: {{windowWidth-100}}px;">
+  	 <span>
+  		&nbsp;{{distance}} km away
 
-    		<br />
-    		<span class='spacer'></span>&nbsp; {{answer}}</small>
-    	</span>
-    </h1>
+  		<br />
+  		<span class='spacer'></span>&nbsp; {{answer}}</small>
+  	</span>
+  </h1>
+<!-- END OF IMAGE CARD -->
 
-  <!-- END OF IMAGE CARD -->
+<!-- START OF BUTTONS -->
+<div class = "row"> 
 
-  <div class = "row"> 
+    <!-- MORE INFO -->
+    <div class="col col-50">
+        <center>
+          <a class="button button-icon ion-ios-information-outline" href = "" on-tap = "moreInfo()">
+            &nbsp;Explore
+          </a>
+        </center>
+    </div>
 
-   
+    <!-- MORE PICTURES -->
+    <div class="col col-50">
+        <center>
+          <a class="button button-icon ion-images" href = "" on-tap = "morePictures()">
+            &nbsp;Pictures
+          </a>
+        </center>
+    </div>
+</div>
 
+<div class = "row">
+    <!-- NEXT BUTTON -->
+      <div class="col">
+        <center>
+          <a class="button button-icon button-outline button-positive" href = "#/dash" style = "width:70%;">
+            Next&nbsp; <i class ="ion-chevron-right"></i>
+          </a>
 
-        <div class="col col-33">
-            <center>
-              <a class="button button-icon ion-ios-information-outline" href = "">
-                &nbsp;Info
-              </a>
-            </center>
-        </div>
+        </center>
+      </div>
 
-        <div class="col col-33">
-            <center>
-              <a class="button button-icon ion-images" href = "" on-tap = "morePictures()">
-                &nbsp;Pictures
-              </a>
-            </center>
-        </div>
-
-        <div class="col col-33">
-            <center>
-              <a class="button button-icon" href = "#/dash">
-                Next &nbsp; <i class ="ion-chevron-right"></i>
-              </a>
-            </center>
-        </div>
-
-
-
-
-
+</div>
 
 
-  </div>
 
-  </div>
-  <!-- END OF CARD -->
+<!-- END OF BUTTONS -->
+
 
 
 

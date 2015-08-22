@@ -1,43 +1,13 @@
-<ion-view view-title="Guess" cache-view="false"  >
+<ion-view view-title="Guess" cache-view="false"  can-swipe-back="false">
   <ion-content scroll="false">
-
-
-<!-- <div class="spacer" style="width: 300px; height: 20px;"></div> -->
-
-<!-- START OF CARD -->
-
 
   <!-- START OF IMAGE -->
   <div id = "map" data-tap-disabled="true" style = "height:{{heightWidth}}px;"></div>
   <!-- END OF IMAGE -->
 
-      <a on-touch="onTouch()" class="button button-stable ion-ios-location button loginbutton" style = "left:{{left_margin}}px">
-        Submit
+      <a on-touch="onTouch()" class="button button-positive ion-ios-location button loginbutton" style = "left:{{left_margin}}px">
+        &nbsp; Submit
     </a>
-<!-- 
-  <div class = "row"> 
-
-    <div class="col">    
-      <center>        
-        <a class="button button-icon icon ion-ios-location" on-touch="onTouch()">
-          Submit
-        </a>
-      </center>
-    </div>
-  
-  </div> -->
-
-  <!-- START OF BUTTONS -->
-<!--   <div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" on-touch="onTouch()">
-      <i class="icon ion-ios-location calm"></i>
-      Submit
-    </a>
-  </div> -->
-  <!-- END OF BUTTONS -->
-
-
-  <!-- END OF CARD -->
 
 
   </ion-content>

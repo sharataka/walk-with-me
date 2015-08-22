@@ -9,10 +9,11 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
 
 
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $ionicPopup) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
+
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
@@ -40,10 +41,22 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
       controller: 'LoginCtrl'
     })
 
+    .state('offline', {
+      url: '/offline',
+      templateUrl: 'templates/offline.html',
+      controller: 'OfflineCtrl'
+    })
+
     .state('fullscreen', {
       url: '/fullscreen/{objectId}/{actual_lat}/{actual_lng}/{image_Link}',
       templateUrl: 'templates/fullscreen.html',
       controller: 'FullscreenCtrl'
+    })
+
+    .state('resultfullscreen', {
+      url: '/resultfullscreen/{answer}/{image_Link}/{distance}/{icon}',
+      templateUrl: 'templates/resultfullscreen.html',
+      controller: 'ResultfullscreenCtrl'
     })
 
     .state('loginform', {
