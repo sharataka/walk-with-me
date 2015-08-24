@@ -9,16 +9,71 @@
 </ion-nav-buttons>
 
 
-  <ion-content scroll="false">
+  <ion-content>
 
 
-    <img class = "login_image" src = "{{imageLink}}" style = "height: {{height}}px;">
+    <img class = "login_image" src = "{{imageLink}}" style = "height: {{width}}px; ">
 
-    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; ">
+    <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; top: 50px; ">
         <span>
             {{answer}}
         </span>
     </div>
+
+
+  <div class = "row">
+    <div class = "col">
+      <center><h4>You placed {{rank}} out of {{total_guesses}} total guesses</h4></center>
+    </div>
+  </div>
+
+  <div class = "row">
+      
+      <div class="col col-50">
+        <center><h4>{{avg_guess}} km</h4></center>
+        <center><p>Avg guess</p></center>
+      </div>
+
+      <div class="col col-50">
+        <center><h4>{{best_guess}} km</h4></center>
+        <center><p>Best guess</p></center>
+      </div>
+
+  </div>
+
+
+<!-- FRIENDS -->
+<div class = "row">
+  <h4>&nbsp; Your friends</h4>
+</div>
+
+<ion-item collection-repeat="friend in friends_result_combined" >
+    <div class = "row">
+
+      <div class = "col col-20">
+        <img src = "{{friend.fb_picture}}" class = "profile_pic">
+      </div>
+
+      <div class = "col col-20">
+        <center>{{friend.name}}</center>
+      </div>
+
+      <div class = "col col-60">
+        <center>{{friend.distance}}km away</center>
+      </div>
+
+    </div>
+</ion-item>
+<!-- END OF FRIENDS -->
+
+
+</div>
+
+
+
+
+
+
 
   </ion-content>
 </ion-view>

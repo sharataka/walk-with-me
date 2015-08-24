@@ -31,20 +31,17 @@
     
     <script src="js/ionic-image-lazy-load.js"></script>    
 
+    <!-- START OF CONNECTIVITY CHECK -->
+    <script type="text/javascript">
+        // Connectivity check
+         if(navigator.onLine){
+         } 
+         else {
+          window.location.href = '#/offline';
+         }
+     </script>
+     <!-- END OF CONNECTIVITY CHECK -->
 
-<!-- START OF CONNECTIVITY CHECK -->
-<script type="text/javascript">
-    // Connectivity check
-     if(navigator.onLine){
-     } 
-     else {
-      window.location.href = '#/offline';
-     }
- </script>
-
-
- <!-- END OF CONNECTIVITY CHECK -->
-    
 
   <script type="text/javascript">
     Parse.initialize("qLfYVjRm0fmRuwLjx0F0TpzPXlQmCg31ennbB0J4", "al2LYRMqMlsPemvbVZo8fYgli2XPa3w51jrvW2fc");
@@ -94,4 +91,6 @@
 
 
   </body>
+
+
 </html>

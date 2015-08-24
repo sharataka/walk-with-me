@@ -2,7 +2,8 @@ angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, $state, $ionicLoading, Chats) {
   
-  // window.localStorage.removeItem('locations');
+  
+
   
   
   $scope.windowWidth = window.innerWidth;
@@ -152,7 +153,9 @@ $scope.data = {
 
     Parse.User.logIn('sharataka', 'goldengun', {
       success: function(user) {
+        window.localStorage['sign_in_method'] = 'username';
         $state.go('tab.dash');
+        
       },
       error: function(user, error) {
         alert(error.message + '. Make sure you enter the right username and password!');
@@ -184,6 +187,7 @@ $scope.data = {
 
     Parse.User.logIn('sharataka', 'goldengun', {
       success: function(user) {
+        window.localStorage['sign_in_method'] = 'username';
         $state.go('tab.dash');
       },
       error: function(user, error) {
@@ -202,13 +206,66 @@ $scope.loginFacebook = function(){
   //Browser Login
   if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
  
-    Parse.FacebookUtils.logIn(null, {
+    Parse.FacebookUtils.logIn("user_friends", {
       success: function(user) {
         console.log(user);
         if (!user.existed()) {
+          window.localStorage['sign_in_method'] = 'facebook';
+
+var User = Parse.Object.extend("User");
+var query = new Parse.Query(User);
+query.get(Parse.User.current().id, {
+  // The object was retrieved successfully.
+  success: function(retreive_user) {
+
+      // Update object
+      retreive_user.save(null, {
+        success: function(update_user) {
+          // Now let's update it with some new data. In this case, only cheatMode and score
+          // will get sent to the cloud. playerName hasn't changed.
+          update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
+          update_user.save();
+        }
+      });
+  },
+  error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+  }
+});
+
           $state.go('tab.dash');
-        } else {
+          
+        } 
+
+        else {
+          window.localStorage['sign_in_method'] = 'facebook';
+
+var User = Parse.Object.extend("User");
+var query = new Parse.Query(User);
+query.get(Parse.User.current().id, {
+  // The object was retrieved successfully.
+  success: function(retreive_user) {
+
+      // Update object
+      retreive_user.save(null, {
+        success: function(update_user) {
+          // Now let's update it with some new data. In this case, only cheatMode and score
+          // will get sent to the cloud. playerName hasn't changed.
+          update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
+          update_user.save();
+        }
+      });
+  },
+  error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+  }
+});
+
+
           $state.go('tab.dash');
+          
         }
       },
       error: function(user, error) {
@@ -221,7 +278,7 @@ $scope.loginFacebook = function(){
   //Native Login
   else {
   
-    $cordovaFacebook.login(["public_profile", "email"]).then(function(success){
+    $cordovaFacebook.login(["public_profile", "email", "user_friends"]).then(function(success){
  
       //Need to convert expiresIn format from FB to date
       var expiration_date = new Date();
@@ -236,15 +293,65 @@ $scope.loginFacebook = function(){
  
       Parse.FacebookUtils.logIn(facebookAuthData, {
         success: function(user) {
-          console.log(user);
           if (!user.existed()) {
+            window.localStorage['sign_in_method'] = 'facebook';
+
+
+var User = Parse.Object.extend("User");
+var query = new Parse.Query(User);
+query.get(Parse.User.current().id, {
+  // The object was retrieved successfully.
+  success: function(retreive_user) {
+
+      // Update object
+      retreive_user.save(null, {
+        success: function(update_user) {
+          // Now let's update it with some new data. In this case, only cheatMode and score
+          // will get sent to the cloud. playerName hasn't changed.
+          update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
+          update_user.save();
+        }
+      });
+  },
+  error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+  }
+});
+
+
             $state.go('tab.dash');
           } else {
+            window.localStorage['sign_in_method'] = 'facebook';
+
+var User = Parse.Object.extend("User");
+var query = new Parse.Query(User);
+query.get(Parse.User.current().id, {
+  // The object was retrieved successfully.
+  success: function(retreive_user) {
+
+      // Update object
+      retreive_user.save(null, {
+        success: function(update_user) {
+          // Now let's update it with some new data. In this case, only cheatMode and score
+          // will get sent to the cloud. playerName hasn't changed.
+          update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
+          update_user.save();
+        }
+      });
+  },
+  error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+  }
+});
+
+
             $state.go('tab.dash');
           }
         },
         error: function(user, error) {
-          alert("User cancelled the Facebook login or did not fully authorize.");
+          alert("User cancelled the login or did not fully authorize.");
         }
       });
  
@@ -289,7 +396,9 @@ $scope.loginFacebook = function(){
     user.signUp(null, {
       success: function(user) {
         // Hooray! Let them use the app now.
+        window.localStorage['sign_in_method'] = 'username';
         $state.go('tab.dash');
+
       },
       error: function(user, error) {
         // Show the error message somewhere and let the user try again.
@@ -487,6 +596,9 @@ $scope.loginFacebook = function(){
       result.set("locationId", $stateParams.location_id);
       result.set("guessLat", Number(localStorage.userLat));
       result.set("guessLong", Number(localStorage.userLong));
+      if (window.localStorage['sign_in_method'] == 'facebook') {
+        result.set("facebookId", Parse.User.current()._serverData.authData.facebook.id);
+      }
       
       result.save(null, {
         success: function(result) {
@@ -556,6 +668,7 @@ $scope.loginFacebook = function(){
 
 .controller('OfflineCtrl', function($scope, $stateParams, $ionicPopup) {
     
+    console.log(navigator.onLine);
     $ionicPopup.alert({
                     title: "You're offlne!",
                     content: "Make sure you're connected to the internet and then tap the button to get going again!"
@@ -583,6 +696,7 @@ $scope.loginFacebook = function(){
   $scope.left_margin = (window.innerWidth - buttonlength) / 2;
 
   $scope.height = window.innerHeight;
+  $scope.width = window.innerWidth;
 
   $scope.objectId = $stateParams.objectId;
   $scope.actual_lat = $stateParams.actual_lat;
@@ -591,11 +705,19 @@ $scope.loginFacebook = function(){
 
 })
 
-.controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory) {
+.controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory, $http) {
   
-  // Calculate left margin on buttons
-  var buttonlength = .7 * window.innerWidth;
-  $scope.left_margin = (window.innerWidth - buttonlength) / 2;
+  var currentUser = Parse.User.current();
+
+    $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0,
+          duration: 5000
+        });
+
 
   $scope.height = window.innerHeight;
 
@@ -608,6 +730,127 @@ $scope.loginFacebook = function(){
   $scope.goToAccount = function(item,event) {
     $state.go('tab.account');
   }
+  
+    var Result = Parse.Object.extend("Result");
+    var result_query = new Parse.Query(Result);
+    result_query.equalTo("locationId", $scope.objectId);
+    result_query.ascending("distance");
+    result_query.find({
+
+    success: function(results) {
+        
+        // Total number of guesses
+        $scope.total_guesses = results.length;
+        
+        // Avg guess
+        var index_of_median = Math.round($scope.total_guesses / 2);
+        $scope.avg_guess = results[index_of_median - 1].get('distance').toFixed(0);
+        
+        // Best guess
+        $scope.best_guess = results[0].get('distance').toFixed(0);
+
+        for (var i = 0; i < results.length; i++) {
+          current_object = results[i];
+
+          
+          if (current_object.get('distance').toFixed(0) == $scope.distance) {
+            var current_rank = i;
+          }
+
+        }
+        $scope.rank = current_rank + 1;
+        $scope.rank = ordinal_suffix_of($scope.rank);
+
+    // FACEBOOK FRIENDS RESULTS
+      if (window.localStorage['sign_in_method'] == 'facebook') {
+            var access_token = currentUser._serverData.authData.facebook.access_token;
+
+            // friends 
+            var fql_query_url = 'https://graph.facebook.com/me?fields=friends{picture{url},name,id}&access_token='+access_token;
+
+            $http.get(fql_query_url).then(function(resp) {
+                $scope.friends = resp.data.friends.data;
+                console.log($scope.friends);
+
+                var array_of_fb_ids = [];
+                for (var i = 0; i < $scope.friends.length; i ++) {
+                  array_of_fb_ids.push($scope.friends[i].id);
+                }
+
+                
+                var Result = Parse.Object.extend("Result");
+                var result_lookup = new Parse.Query(Result);
+                result_lookup.equalTo("locationId", $scope.objectId);
+                result_lookup.containedIn("facebookId", array_of_fb_ids);
+                result_lookup.descending("distance");
+                result_lookup.find({
+
+                    success: function(friends_results) {
+                      console.log(friends_results);
+
+                      $scope.friends_result_combined = [];
+                      for (var i = 0; i < friends_results.length; i++) {
+                        current_result = friends_results[i];
+                        var distance = current_result.attributes.distance.toFixed(0);
+                        var facebookId = current_result.attributes.facebookId;
+                        for (var i = 0; i < $scope.friends.length; i++) {
+                          current = $scope.friends[i];
+                          if (current.id == facebookId) {
+
+                            var name = current.name;
+                            var fb_picture = current.picture.data.url;
+                            
+                          }
+                        }
+                        var result_object = {distance: distance, name: name, fb_picture: fb_picture}
+                        $scope.friends_result_combined.push(result_object);
+                      }
+
+
+                    }
+                });
+              $ionicLoading.hide();
+            }, function(err) {
+              console.error('ERR', err);
+              // err.status will contain the status code
+            })
+        
+      }
+      // END OF FACEBOOK FRIENDS RESULTS
+
+      else {
+        $ionicLoading.hide();
+      }
+
+        
+        
+
+      },
+      error: function(error) {
+        alert("Error: " + error.code + " " + error.message);
+        $ionicLoading.hide();
+      }
+    });
+
+
+
+      
+
+
+function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
 
 })
 
@@ -724,7 +967,7 @@ $scope.loginFacebook = function(){
     } else {
       var icon = 'close';
     }
-    $state.go('resultfullscreen', {image_Link: encodeURI(imageObject.imageLink), answer: imageObject.Answer, distance: distance, icon: icon }) 
+    $state.go('resultfullscreen', {objectId: imageObject.objectId, image_Link: encodeURI(imageObject.imageLink), answer: imageObject.Answer, distance: distance, icon: icon }) 
   }
   // END OF BUTTON TO GO FULLSCREEN
 
@@ -763,21 +1006,48 @@ $scope.loginFacebook = function(){
     // END OF PARSE DB QUERY
   }
 
-  // FACEBOOK STUFF
-  var access_token = currentUser._serverData.authData.facebook.access_token;
-  // console.log(currentUser._serverData.authData.facebook);
-  var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
+  
 
-   $http.get(fb_prof_json_link).then(function(resp) {
-    // For JSON responses, resp.data contains the result
-    // console.log(resp.data);
-    $scope.profile_image = resp.data.picture.data.url;
-    $scope.username = resp.data.name;
+      if (window.localStorage['sign_in_method'] == 'facebook') {
+            var access_token = currentUser._serverData.authData.facebook.access_token;
+            var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
+             $http.get(fb_prof_json_link).then(function(resp) {
+              // console.log(resp.data);
+              $scope.profile_image = resp.data.picture.data.url;
+              $scope.username = resp.data.name;
 
-  }, function(err) {
-    console.error('ERR', err);
-    // err.status will contain the status code
-  })
+            }, function(err) {
+              console.error('ERR', err);
+              // err.status will contain the status code
+            })
+
+            var query = 'fields=id,name,email,picture{url,height,is_silhouette,width}';
+            var fql_query_url = 'https://graph.facebook.com/me?' + query + '&access_token=' + access_token;
+            
+
+            // friends 
+            var fql_query_url = 'https://graph.facebook.com/me?fields=friends{picture{url}}&access_token='+access_token;
+
+
+            $http.get(fql_query_url).then(function(resp) {
+                console.log(resp);
+
+            }, function(err) {
+              console.error('ERR', err);
+              // err.status will contain the status code
+            })
+
+            
+      }
+
+      else {
+          $scope.username = currentUser.attributes.username;
+          $scope.profile_image = 'http://crec.unl.edu/images/Icons/OA_Tent_red.png';
+
+      }
+
+        
   // End of facebook stuff
+
 
 });

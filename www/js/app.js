@@ -54,7 +54,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
     })
 
     .state('resultfullscreen', {
-      url: '/resultfullscreen/{answer}/{image_Link}/{distance}/{icon}',
+      url: '/resultfullscreen/{answer}/{image_Link}/{distance}/{icon}/{objectId}',
       templateUrl: 'templates/resultfullscreen.html',
       controller: 'ResultfullscreenCtrl'
     })
