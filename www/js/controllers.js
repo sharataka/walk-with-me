@@ -95,7 +95,7 @@ angular.module('starter.controllers', [])
 
         var CoorList = Parse.Object.extend("CoorList");
         var query = new Parse.Query(CoorList);
-        query.descending("createdAt");
+        query.ascending("createdAt");
         query.notContainedIn("objectId", user_result);
         query.limit(8);
         query.find({
@@ -151,7 +151,9 @@ $scope.data = {
   //Click button to login
   $scope.login = function(item,event){
 
-    Parse.User.logIn('sharataka', 'goldengun', {
+    $scope.data.username = angular.lowercase($scope.data.username);
+
+    Parse.User.logIn($scope.data.username, $scope.data.password, {
       success: function(user) {
         window.localStorage['sign_in_method'] = 'username';
         $state.go('tab.dash');
@@ -206,33 +208,33 @@ $scope.loginFacebook = function(){
   //Browser Login
   if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
  
-    Parse.FacebookUtils.logIn("user_friends", {
+    Parse.FacebookUtils.logIn("user_friends,email", {
       success: function(user) {
         console.log(user);
         if (!user.existed()) {
           window.localStorage['sign_in_method'] = 'facebook';
 
-var User = Parse.Object.extend("User");
-var query = new Parse.Query(User);
-query.get(Parse.User.current().id, {
-  // The object was retrieved successfully.
-  success: function(retreive_user) {
+          var User = Parse.Object.extend("User");
+          var query = new Parse.Query(User);
+          query.get(Parse.User.current().id, {
+            // The object was retrieved successfully.
+            success: function(retreive_user) {
 
-      // Update object
-      retreive_user.save(null, {
-        success: function(update_user) {
-          // Now let's update it with some new data. In this case, only cheatMode and score
-          // will get sent to the cloud. playerName hasn't changed.
-          update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
-          update_user.save();
-        }
-      });
-  },
-  error: function(object, error) {
-    // The object was not retrieved successfully.
-    // error is a Parse.Error with an error code and message.
-  }
-});
+                // Update object
+                retreive_user.save(null, {
+                  success: function(update_user) {
+                    // Now let's update it with some new data. In this case, only cheatMode and score
+                    // will get sent to the cloud. playerName hasn't changed.
+                    update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
+                    update_user.save();
+                  }
+                });
+            },
+            error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+            }
+          });
 
           $state.go('tab.dash');
           
@@ -241,27 +243,28 @@ query.get(Parse.User.current().id, {
         else {
           window.localStorage['sign_in_method'] = 'facebook';
 
-var User = Parse.Object.extend("User");
-var query = new Parse.Query(User);
-query.get(Parse.User.current().id, {
-  // The object was retrieved successfully.
-  success: function(retreive_user) {
+          var User = Parse.Object.extend("User");
+          var query = new Parse.Query(User);
+          query.get(Parse.User.current().id, {
+            // The object was retrieved successfully.
+            success: function(retreive_user) {
 
-      // Update object
-      retreive_user.save(null, {
-        success: function(update_user) {
-          // Now let's update it with some new data. In this case, only cheatMode and score
-          // will get sent to the cloud. playerName hasn't changed.
-          update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
-          update_user.save();
-        }
-      });
-  },
-  error: function(object, error) {
-    // The object was not retrieved successfully.
-    // error is a Parse.Error with an error code and message.
-  }
-});
+                // Update object
+                retreive_user.save(null, {
+                  success: function(update_user) {
+                    // Now let's update it with some new data. In this case, only cheatMode and score
+                    // will get sent to the cloud. playerName hasn't changed.
+                    console.log(retreive_user._serverData.authData.facebook);
+                    update_user.set("facebookId", retreive_user._serverData.authData.facebook.id);
+                    update_user.save();
+                  }
+                });
+            },
+            error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+            }
+          });
 
 
           $state.go('tab.dash');
@@ -714,22 +717,21 @@ query.get(Parse.User.current().id, {
           animation: 'fade-in',
           showBackdrop: true,
           maxWidth: 200,
-          showDelay: 0,
-          duration: 5000
+          showDelay: 0
+          // duration: 5000
         });
 
 
-  $scope.height = window.innerHeight;
+  $scope.height = window.innerWidth;
 
   $scope.objectId = $stateParams.objectId;
   $scope.imageLink = $stateParams.image_Link;
   $scope.answer = $stateParams.answer;
-  $scope.icon = $stateParams.icon;
-  $scope.distance =  Number($stateParams.distance).toFixed(0);
 
   $scope.goToAccount = function(item,event) {
     $state.go('tab.account');
   }
+
   
     var Result = Parse.Object.extend("Result");
     var result_query = new Parse.Query(Result);
@@ -743,26 +745,50 @@ query.get(Parse.User.current().id, {
         $scope.total_guesses = results.length;
         
         // Avg guess
-        var index_of_median = Math.round($scope.total_guesses / 2);
-        $scope.avg_guess = results[index_of_median - 1].get('distance').toFixed(0);
+        var index_of_median = $scope.total_guesses / 2;
+        if ($scope.total_guesses % 2 == 0) {
+          $scope.avg_guess = ( Number(results[index_of_median - 1].get('distance').toFixed(0)) + Number(results[index_of_median].get('distance').toFixed(0)) ) / 2;
+        }
+        else {
+          $scope.avg_guess = results[index_of_median - 0.5].get('distance').toFixed(0);
+        }
+        
         
         // Best guess
         $scope.best_guess = results[0].get('distance').toFixed(0);
 
+        // Get the user's guess
         for (var i = 0; i < results.length; i++) {
           current_object = results[i];
+          if (current_object.attributes.user == currentUser.id) {
+            $scope.distance = Number(current_object.attributes.distance).toFixed(0);
+              if (Number($scope.distance) < 501) {
+                $scope.answer_text = "Correct!";
+                $scope.icon = "checkmark";
+              }
+              else {
+                $scope.answer_text = "Incorrect"; 
+                $scope.icon = "close";
+              }
+          }
+        }
+        // End of getting user's guess
 
-          
-          if (current_object.get('distance').toFixed(0) == $scope.distance) {
+        // Get user's rank
+        for (var i = 0; i < results.length; i++) {
+          current_object = results[i];
+          if ( current_object.get('distance').toFixed(0) == $scope.distance) {
             var current_rank = i;
           }
 
         }
         $scope.rank = current_rank + 1;
         $scope.rank = ordinal_suffix_of($scope.rank);
+        // End of getting user's rank
 
     // FACEBOOK FRIENDS RESULTS
       if (window.localStorage['sign_in_method'] == 'facebook') {
+        
             var access_token = currentUser._serverData.authData.facebook.access_token;
 
             // friends 
@@ -770,8 +796,6 @@ query.get(Parse.User.current().id, {
 
             $http.get(fql_query_url).then(function(resp) {
                 $scope.friends = resp.data.friends.data;
-                console.log($scope.friends);
-
                 var array_of_fb_ids = [];
                 for (var i = 0; i < $scope.friends.length; i ++) {
                   array_of_fb_ids.push($scope.friends[i].id);
@@ -783,16 +807,24 @@ query.get(Parse.User.current().id, {
                 result_lookup.equalTo("locationId", $scope.objectId);
                 result_lookup.containedIn("facebookId", array_of_fb_ids);
                 result_lookup.descending("distance");
+                
                 result_lookup.find({
 
-                    success: function(friends_results) {
-                      console.log(friends_results);
 
+                    success: function(friends_results) {
                       $scope.friends_result_combined = [];
+                      
+                      $scope.friends_text = "Your friends";
+                      if (friends_results.length == 0) {
+                        $ionicLoading.hide();
+                        $scope.friends_text = "Your friends haven't played this yet!"
+                      }
                       for (var i = 0; i < friends_results.length; i++) {
+
                         current_result = friends_results[i];
                         var distance = current_result.attributes.distance.toFixed(0);
                         var facebookId = current_result.attributes.facebookId;
+                        
                         for (var i = 0; i < $scope.friends.length; i++) {
                           current = $scope.friends[i];
                           if (current.id == facebookId) {
@@ -802,14 +834,21 @@ query.get(Parse.User.current().id, {
                             
                           }
                         }
+                        
                         var result_object = {distance: distance, name: name, fb_picture: fb_picture}
                         $scope.friends_result_combined.push(result_object);
-                      }
+                        $ionicLoading.hide();
+                      } 
+                            
 
 
-                    }
+                    },
+                    error: function(error) {
+                              alert("Error: " + error.code + " " + error.message);
+                              $ionicLoading.hide();
+                            }
                 });
-              $ionicLoading.hide();
+              
             }, function(err) {
               console.error('ERR', err);
               // err.status will contain the status code
@@ -819,6 +858,8 @@ query.get(Parse.User.current().id, {
       // END OF FACEBOOK FRIENDS RESULTS
 
       else {
+        $scope.friends_text = "Sign in with Facebook";
+        $scope.friends_text_subheader = "Logout and sign up with Facebook to play with your friends!";
         $ionicLoading.hide();
       }
 
@@ -855,7 +896,7 @@ function ordinal_suffix_of(i) {
 })
 
 .controller('AccountCtrl', function($state, $scope, $http, $ionicLoading, $stateParams) {
-
+mixpanel.track("Account page view");
 
     // REFRESH
   $scope.refresh = function (){
@@ -920,14 +961,11 @@ function ordinal_suffix_of(i) {
 
           $scope.distances.push(object.get('distance'));
         }
-
-      
-
-
+        
         var CoorList = Parse.Object.extend("CoorList");
         var query = new Parse.Query(CoorList);
         query.containedIn("objectId", user_result);
-        query.ascending("createdAt");
+        query.descending("createdAt");
         query.find({
                   
         success: function(locations) {
@@ -959,7 +997,7 @@ function ordinal_suffix_of(i) {
 
 
   // TAP TO GO TO FULLSCREEN
-  $scope.fullscreenImage = function (item,event) {
+  $scope.fullscreenImage = function (item) {
     var imageObject = $scope.played_locations[item];
     var distance = $scope.distances[item];
     if (distance < 501) {
@@ -1011,33 +1049,41 @@ function ordinal_suffix_of(i) {
       if (window.localStorage['sign_in_method'] == 'facebook') {
             var access_token = currentUser._serverData.authData.facebook.access_token;
             var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
+             
              $http.get(fb_prof_json_link).then(function(resp) {
-              // console.log(resp.data);
               $scope.profile_image = resp.data.picture.data.url;
               $scope.username = resp.data.name;
 
-            }, function(err) {
-              console.error('ERR', err);
-              // err.status will contain the status code
+              // Save email in database if not stored already
+              var email = resp.data.email;
+              if ( window.localStorage['email'] == undefined) {
+                          var User = Parse.Object.extend("User");
+                          var query = new Parse.Query(User);
+                          query.get(Parse.User.current().id, {
+                            // The object was retrieved successfully.
+                            success: function(retreive_user) {
+
+                                // Update object
+                                retreive_user.save(null, {
+                                  success: function(update_user) {
+                                    // Now let's update it with some new data. In this case, only cheatMode and score
+                                    // will get sent to the cloud. playerName hasn't changed.
+                                    update_user.set("email", email);
+                                    update_user.save();
+                                    window.localStorage['email'] = email;
+                                  }
+                                });
+                            },
+                            error: function(object, error) {
+                              // The object was not retrieved successfully.
+                              // error is a Parse.Error with an error code and message.
+                            }
+                          });
+              }
+              // End of saving email in database
+
             })
 
-            var query = 'fields=id,name,email,picture{url,height,is_silhouette,width}';
-            var fql_query_url = 'https://graph.facebook.com/me?' + query + '&access_token=' + access_token;
-            
-
-            // friends 
-            var fql_query_url = 'https://graph.facebook.com/me?fields=friends{picture{url}}&access_token='+access_token;
-
-
-            $http.get(fql_query_url).then(function(resp) {
-                console.log(resp);
-
-            }, function(err) {
-              console.error('ERR', err);
-              // err.status will contain the status code
-            })
-
-            
       }
 
       else {

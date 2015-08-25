@@ -1,12 +1,12 @@
 <ion-view view-title="{{username}}" cache-view="true">
 
      <ion-nav-buttons side="right">
-  <a on-tap = "deletedata()" class="button button-assertive">
-    <i class = "ion-trash-a"> Delete</i>
+  <a on-tap = "deletedata()" class="button button-clear">
+    <i class = "ion-trash-a"></i>
   </a>
 </ion-nav-buttons>
 
-  <ion-content>
+  <ion-content lazy-scroll>
 
    <ion-refresher
     pulling-text="Pull to refresh..."
@@ -14,37 +14,61 @@
   </ion-refresher>
 
 
-    <img class = "profile_background_image" src = "http://proof.nationalgeographic.com/files/2014/11/PastedGraphic-2.jpg" style = "height: {{height}}px;">
+    
     
 
-    <img src = "{{profile_image}}" class = "profile_pic" style = "left:{{leftMarginProfilePicture}}px;">
+    
 
-
+<div style = "background-image: url('http://proof.nationalgeographic.com/files/2014/11/PastedGraphic-2.jpg'); background-size: 425px 170px;">
+  <div class = "row">
+    <div class = "col col-100">
+      <center><img src = "{{profile_image}}" style = "border-radius: 50%; height: 50px;"></center>
+    </div>
+  </div>
 
   <div class = "row">
+
+      <div class="col col-33">
+        <center>
+          <h4 style = "color: white; background: rgba(0, 0, 0 , 0.7); padding: 10px;">
+            <i class ="ion-checkmark"></i> {{correct}}
+            <br><small>Correct</small>
+          </h4>
+        </center>
+      </div>
       
-      <div class="col col-33">
-        <center><h4>{{correct}} <i class ="ion-checkmark"></i></h4></center>
-        <center><p>Correct</p></center>
-      </div>
+      
+
+
 
       <div class="col col-33">
-        <center><h4>{{incorrect}} <i class ="ion-close"></i></h4></center>
-        <center><p>Incorrect</p></center>
+        <center>
+          <h4 style = "color: white; background: rgba(0, 0, 0 , 0.7); padding: 10px;">
+            <i class ="ion-close"></i> {{incorrect}}
+            <br><small>Incorrect</small>
+          </h4>
+        </center>
       </div>
+
+      
 
       <div class="col col-33">
-        <center><h4>{{best_guess}} km <i class ="ion-ios-location"></i></h4></center>
-        <center><p>Best Guess</p></center>
+        <center>
+          <h4 style = "color: white; background: rgba(0, 0, 0 , 0.7); padding: 10px;">
+            <i class ="ion-ios-location"></i> {{best_guess}} km
+            <br><small>Best Guess</small>
+          </h4>
+        </center>
       </div>
 
-  </div>
-  
+
+    </div>
+</div>
+    
   <!-- RESULTS TEXT   -->
   <div class = "row"> 
-      <h4>&nbsp;<i class = "ion-ios-location"></i> Results</h4>
+      <h4>&nbsp;<i class = "ion-images positive"></i> Results</h4>
   </div>
-  <hr noshade>
   <!-- END OF RESULTS TEXT -->
 
   <!-- BEGINNING OF REPEATING -->
@@ -52,15 +76,15 @@
     <div class="row" style = "padding: 0px; "ng-repeat="image in played_locations" ng-if="$index % 3 === 0">
         
         <div class="col col-33" ng-if="$index < played_locations.length" style = "padding:1px;">
-            <img src = "{{played_locations[$index].imageLink}}" on-tap = "fullscreenImage($index)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+            <img image-lazy-loader="crescent" image-lazy-src = "{{played_locations[$index].imageLink}}" on-tap = "fullscreenImage($index)" style= "width: 100%; height: {{windowDividedBy3}}px;">
         </div>
         
         <div class="col col-33" ng-if="$index + 1 < played_locations.length" style = "padding:1px;">
-            <img src = "{{played_locations[$index + 1].imageLink}}" on-tap = "fullscreenImage($index + 1)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+            <img image-lazy-loader="crescent" image-lazy-src = "{{played_locations[$index + 1].imageLink}}" on-tap = "fullscreenImage($index + 1)" style= "width: 100%; height: {{windowDividedBy3}}px;">
         </div>
         
         <div class="col col-33" ng-if="$index + 2 < played_locations.length" style = "padding:1px;">
-            <img src = "{{played_locations[$index + 2].imageLink}}" on-tap = "fullscreenImage($index + 2)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+            <img image-lazy-loader="crescent" image-lazy-src = "{{played_locations[$index + 2].imageLink}}" on-tap = "fullscreenImage($index + 2)" style= "width: 100%; height: {{windowDividedBy3}}px;">
         </div>
 
     </div>
