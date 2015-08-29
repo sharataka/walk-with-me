@@ -18,22 +18,55 @@
   </ion-refresher>
 
 
+<!-- 
+<div ng-repeat="item in locations"> -->
+  
+  <!-- START OF IMAGE -->
+<!--   <div class = "row" style = "padding: 0px; border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 5px; border: 0px;">
+    <a on-tap="fullscreenImage($index)">
+      <img image-lazy-src = "{{item.imageLink}}" class = "image"  style= "height: {{windowWidth}}px;" image-lazy-loader="crescent">
+    </a>
+  </div> -->
+  <!-- END OF IMAGE -->
+  
+  <!-- START OF FACT -->
+<!--   <div class = "row" style = "padding: 0px; border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 25px; border: 0px;">
+            <div class="item item-text-wrap" style = "border-color:white; padding-top:5px;">
+          <label class = "positive">
+            <i class = "ion-information-circled positive"></i>&nbsp;<strong>Hint:</strong>
+          </label>
+          <label class = "dark">
+            &nbsp;{{item.Fact}}
+          </label>
+        </div>
+  </div> -->
+  <!-- END OF FACT -->
+
+<!-- </div> -->
+
   <!-- BEGINNING OF REPEATING -->
     <ion-list>
 
-      
-
       <ion-item collection-repeat="item in locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 15px; border: 0px;" >
-        
+
+
 
         <!-- START OF IMAGE -->
         <div class="item item-image">
           <a on-tap="fullscreenImage($index)">
-            <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
+            <img src = "{{item.imageLink}}" class = "image"  style= "height: {{windowWidth}}px;">
           </a>
         </div>
         <!-- END OF IMAGE -->
-
+        
+        <div class="item item-text-wrap" style = "border-color:white; padding-bottom:25px;">
+          <label class = "positive">
+            <i class = "ion-information-circled positive"></i>
+          </label>
+         
+            <label style = "font-family:'Lucida Sans Unicode', 'Lucida Grande', sans-serif">&nbsp;{{item.Fact}}</label>
+          
+        </div>
         
 
       </ion-item>

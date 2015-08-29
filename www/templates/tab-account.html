@@ -14,11 +14,6 @@
   </ion-refresher>
 
 
-    
-    
-
-    
-
 <div style = "background-image: url('http://proof.nationalgeographic.com/files/2014/11/PastedGraphic-2.jpg'); background-size: 425px 170px;">
   <div class = "row">
     <div class = "col col-100">
@@ -73,7 +68,7 @@
 
   <!-- BEGINNING OF REPEATING -->
 
-    <div class="row" style = "padding: 0px; "ng-repeat="image in played_locations" ng-if="$index % 3 === 0">
+    <div class="row" style = "padding: 0px;" ng-repeat="image in played_locations" ng-if="$index % 3 === 0">
         
         <div class="col col-33" ng-if="$index < played_locations.length" style = "padding:1px;">
             <img image-lazy-loader="crescent" image-lazy-src = "{{played_locations[$index].imageLink}}" on-tap = "fullscreenImage($index)" style= "width: 100%; height: {{windowDividedBy3}}px;">
@@ -84,32 +79,11 @@
         </div>
         
         <div class="col col-33" ng-if="$index + 2 < played_locations.length" style = "padding:1px;">
-            <img image-lazy-loader="crescent" image-lazy-src = "{{played_locations[$index + 2].imageLink}}" on-tap = "fullscreenImage($index + 2)" style= "width: 100%; height: {{windowDividedBy3}}px;">
+            <img image-lazy-loader="crescent" image-lazy-src = "{{played_locations[$index + 2].imageLink}}" on-tap = "fullscreenImage($index + 2)" style= "width: 100%; height: {{windowDividedBy3}}px;" >
         </div>
 
     </div>
-
-
-<!-- BEGINNING OF FEED -->
-<!--     <ion-list>
-
-      <ion-item collection-repeat="item in played_locations" style = "border-color:white; padding-left: 0px; padding-right: 0px; padding-top: 0px; padding-bottom: 0px; border:0px;" >
-        
-
-        START OF IMAGE
-        <div class="item item-image">
-          <img class = "image" src = "{{item.imageLink}}" style= "height: {{windowWidth}}px;">
-        </div>
-        <!-- END OF IMAGE -->
-
-
-<!--       </ion-item>
-
-    </ion-list> -->
-<!-- END OF FEED -->
     
-
-
 
   </ion-content>
 </ion-view>

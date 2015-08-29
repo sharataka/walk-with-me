@@ -39,8 +39,8 @@
     <!-- MORE INFO -->
     <div class="col col-50">
         <center>
-          <a class="button button-icon ion-ios-information-outline" href = "" on-tap = "moreInfo()">
-            &nbsp;Explore
+          <a class="button button-icon ion-ios-information-outline positive" href = "" on-tap = "moreInfo()">
+            &nbsp;<span class = "dark">Explore</span>
           </a>
         </center>
     </div>
@@ -48,13 +48,69 @@
     <!-- MORE PICTURES -->
     <div class="col col-50">
         <center>
-          <a class="button button-icon ion-images" href = "" on-tap = "morePictures()">
-            &nbsp;Pictures
+          <a class="button button-icon ion-images positive" href = "" on-tap = "morePictures()">
+            &nbsp;<span class = "dark">Pictures</span>
           </a>
         </center>
     </div>
 </div>
 
+
+<div class = "row">
+  <div class = "col col-100">
+    <center><h4><i class = "ion-person-stalker positive"></i>&nbsp; You placed {{rank}} out of {{total_guesses}} total guesses</h4></h4></center>
+  </div>
+</div>
+
+
+
+  <div class = "row">
+      
+      <div class="col col-33">
+        <center><h4>{{distance}} km</h4></center>
+        <center><p>Your guess</p></center>
+      </div>
+
+      <div class="col col-33">
+        <center><h4>{{avg_guess}} km</h4></center>
+        <center><p>Avg guess</p></center>
+      </div>
+
+      <div class="col col-33">
+        <center><h4>{{best_guess}} km</h4></center>
+        <center><p>Best guess</p></center>
+      </div>
+
+  </div>
+
+<!-- FRIENDS -->
+<hr style = "width:20%">
+<div class = "row">
+  <div class = "col col-100">
+    <center><h4><i class = "ion-social-facebook positive"></i>&nbsp; {{friends_text}}</h4></center>
+  </div>
+</div>
+
+<ion-item collection-repeat="friend in friends_result_combined" style = "border:0px;">
+    <div class = "row">
+
+      <div class = "col col-20">
+        <img src = "{{friend.fb_picture}}" class = "profile_pic">
+      </div>
+
+      <div class = "col col-20">
+        <center>{{friend.name}}</center>
+      </div>
+
+      <div class = "col col-60">
+        <center>{{friend.distance}} km away</center>
+      </div>
+
+    </div>
+
+</ion-item>
+<!-- END OF FRIENDS -->
+  
 <div class = "row">
     <!-- NEXT BUTTON -->
       <div class="col">

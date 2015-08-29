@@ -1,11 +1,10 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $state, $ionicLoading, Chats) {
-  
+.controller('DashCtrl', function($scope, $state, $ionicLoading, Chats, $ionicPopup) {
   
 
-  
-  
+  mixpanel.track("Home page view");
+
   $scope.windowWidth = window.innerWidth;
   $scope.heightWidth = window.innerHeight - 100;
   var currentUser = Parse.User.current();
@@ -39,6 +38,7 @@ angular.module('starter.controllers', [])
 
         // If there aren't items in localstorage, make a db call
         else {
+          mixpanel.track("Home page: get locations feed");
           $scope.locations == getlocations(currentUser);
         }
         
@@ -105,7 +105,6 @@ angular.module('starter.controllers', [])
           window.localStorage['locations'] = JSON.stringify(locations);
           var testObject = JSON.parse(window.localStorage['locations']);
           $scope.locations = testObject;
-
             
           if (locations.length == 0){
             $scope.refresh_message = "You've played all of our pictures. But we'll have more tomorrow so come back...";
@@ -116,7 +115,11 @@ angular.module('starter.controllers', [])
         },
 
         error: function(error){
-          alert("Error: " + error.code + " " + error.message);
+          $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+          // alert("Error: " + error.code + " " + error.message);
           $ionicLoading.hide();
         }
 
@@ -124,7 +127,11 @@ angular.module('starter.controllers', [])
 
       },
       error: function(error) {
-        alert("Error: " + error.code + " " + error.message);
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
         $ionicLoading.hide();
       }
     });
@@ -141,7 +148,7 @@ angular.module('starter.controllers', [])
 })
 // END OF HOME CONTROLLER
 
-.controller('LoginFormCtrl', function($scope, $state, $cordovaFacebook) {
+.controller('LoginFormCtrl', function($scope, $state, $cordovaFacebook, $ionicPopup) {
 $scope.data = {
     'username' : '',
     'password' : ''
@@ -160,7 +167,11 @@ $scope.data = {
         
       },
       error: function(user, error) {
-        alert(error.message + '. Make sure you enter the right username and password!');
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Make sure you enter the right username and password"
+                    })  
+        // alert(error.message + '. Make sure you enter the right username and password!');
 
       }
     });
@@ -168,7 +179,9 @@ $scope.data = {
   };
 })
 
-.controller('LoginCtrl', function($scope, $state, $cordovaFacebook) {
+.controller('LoginCtrl', function($scope, $state, $cordovaFacebook, $ionicPopup) {
+
+mixpanel.track("Walkthrough view");
 
 // Calculate left margin on buttons
 var buttonlength = .7 * window.innerWidth;
@@ -193,7 +206,11 @@ $scope.data = {
         $state.go('tab.dash');
       },
       error: function(user, error) {
-        alert(error.message + '. Make sure you enter the right username and password!');
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Make sure you enter the right username and password!"
+                    })  
+        // alert(error.message + '. Make sure you enter the right username and password!');
 
       }
     });
@@ -210,10 +227,9 @@ $scope.loginFacebook = function(){
  
     Parse.FacebookUtils.logIn("user_friends,email", {
       success: function(user) {
-        console.log(user);
         if (!user.existed()) {
           window.localStorage['sign_in_method'] = 'facebook';
-
+          mixpanel.track("Login: facebook");
           var User = Parse.Object.extend("User");
           var query = new Parse.Query(User);
           query.get(Parse.User.current().id, {
@@ -242,7 +258,7 @@ $scope.loginFacebook = function(){
 
         else {
           window.localStorage['sign_in_method'] = 'facebook';
-
+          mixpanel.track("Login: facebook");
           var User = Parse.Object.extend("User");
           var query = new Parse.Query(User);
           query.get(Parse.User.current().id, {
@@ -272,7 +288,12 @@ $scope.loginFacebook = function(){
         }
       },
       error: function(user, error) {
-        alert("User cancelled the Facebook login or did not fully authorize.");
+        mixpanel.track("Login error: facebook");
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "You cancelled the Facebook login or it didn't work."
+                    })  
+        // alert("User cancelled the Facebook login or did not fully authorize.");
       }
     });
  
@@ -297,6 +318,7 @@ $scope.loginFacebook = function(){
       Parse.FacebookUtils.logIn(facebookAuthData, {
         success: function(user) {
           if (!user.existed()) {
+            mixpanel.track("Login: facebook");
             window.localStorage['sign_in_method'] = 'facebook';
 
 
@@ -354,12 +376,20 @@ query.get(Parse.User.current().id, {
           }
         },
         error: function(user, error) {
-          alert("User cancelled the login or did not fully authorize.");
+          $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "You cancelled the login or it didn't work"
+                    })  
+          // alert("User cancelled the login or did not fully authorize.");
         }
       });
  
     }, function(error){
-      alert('error');
+      $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+                    // alert('error');
     });
  
   }
@@ -370,7 +400,7 @@ query.get(Parse.User.current().id, {
 
 })
 
-.controller('SignupCtrl', function($scope, $state) {
+.controller('SignupCtrl', function($scope, $state, $ionicPopup) {
 
     // Data bind the username and password fields
     $scope.data = {
@@ -405,7 +435,11 @@ query.get(Parse.User.current().id, {
       },
       error: function(user, error) {
         // Show the error message somewhere and let the user try again.
-        alert("Error: " + error.code + " " + error.message);
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: error.message
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
       }
     });
 
@@ -414,6 +448,8 @@ query.get(Parse.User.current().id, {
 })
 
 .controller('GuessCtrl', function($scope, $state, $stateParams, $ionicPopup) {
+
+  mixpanel.track("Guess page view");
 
   // Calculate left margin on buttons
   var buttonlength = .7 * window.innerWidth;
@@ -493,15 +529,20 @@ query.get(Parse.User.current().id, {
 
         },
         error: function(error) {
-          alert("Error: " + error.code + " " + error.message);
+          $ionicPopup.alert({
+                        title: "Error",
+                        content: "Swipe down to refresh"
+                    })
+          // alert("Error: " + error.code + " " + error.message);
         }
       });
       // END OF DISPLAY IMAGE
 
 })
 
-.controller('ResultCtrl', function($scope, $state, $stateParams) {
+.controller('ResultCtrl', function($scope, $state, $stateParams, $ionicPopup, $http, $ionicLoading) {
 
+    var currentUser = Parse.User.current();
 
       // //Calc user's score
       // var maxScore = 500;
@@ -608,7 +649,11 @@ query.get(Parse.User.current().id, {
           
         },
         error: function(result, error) {
-          alert('Failed to create new object, with error code: ' + error.message);
+          $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+          // alert('Failed to create new object, with error code: ' + error.message);
         }
       });
       // END OF SAVING SCORE TO DATABASE
@@ -617,10 +662,12 @@ query.get(Parse.User.current().id, {
       $scope.answer = localStorage.answer;
 
        $scope.morePictures = function () {
+          mixpanel.track("Results page: view more pictures");
           window.open('https://www.google.com/images?q=' + $scope.answer +'', 'blank');
         }
 
         $scope.moreInfo = function () {
+          mixpanel.track("Results page: view more info");
           window.open('https://www.google.com/search?q=' + $scope.answer +'', 'blank');
         }
 
@@ -641,16 +688,194 @@ query.get(Parse.User.current().id, {
     
     google.maps.event.addDomListener(document.getElementById("map_result"), 'load', $scope.initialise());
 
+    get_community_results();
 
+    function get_community_results() {
+      var Result = Parse.Object.extend("Result");
+      var result_query = new Parse.Query(Result);
+      result_query.equalTo("locationId", $stateParams.location_id);
+      result_query.ascending("distance");
+      result_query.find({
+
+    success: function(results) {
+        
+        // Total number of guesses
+        $scope.total_guesses = results.length;
+        
+        // Avg guess
+        var index_of_median = $scope.total_guesses / 2;
+        if ($scope.total_guesses % 2 == 0) {
+          $scope.avg_guess = ( Number(results[index_of_median - 1].get('distance').toFixed(0)) + Number(results[index_of_median].get('distance').toFixed(0)) ) / 2;
+        }
+        else {
+          $scope.avg_guess = results[index_of_median - 0.5].get('distance').toFixed(0);
+        }
+        
+        
+        // Best guess
+        $scope.best_guess = results[0].get('distance').toFixed(0);
+
+        // Get the user's guess
+        for (var i = 0; i < results.length; i++) {
+          current_object = results[i];
+          if (current_object.attributes.user == currentUser.id) {
+            $scope.distance = Number(current_object.attributes.distance).toFixed(0);
+              if (Number($scope.distance) < 501) {
+                $scope.answer_text = "Correct!";
+                $scope.icon = "checkmark";
+              }
+              else {
+                $scope.answer_text = "Incorrect"; 
+                $scope.icon = "close";
+              }
+          }
+        }
+        // End of getting user's guess
+
+        // Get user's rank
+        for (var i = 0; i < results.length; i++) {
+          current_object = results[i];
+          if ( current_object.get('distance').toFixed(0) == $scope.distance) {
+            var current_rank = i;
+          }
+
+        }
+        $scope.rank = current_rank + 1;
+        $scope.rank = ordinal_suffix_of($scope.rank);
+        // End of getting user's rank
+
+
+
+
+
+
+
+
+
+
+    // FACEBOOK FRIENDS RESULTS
+      if (window.localStorage['sign_in_method'] == 'facebook') {
+        
+
+            var access_token = currentUser._serverData.authData.facebook.access_token;
+
+            // friends 
+            var fql_query_url = 'https://graph.facebook.com/me?fields=friends{picture{url,height=961},name,id}&access_token='+access_token;
+
+            $http.get(fql_query_url).then(function(resp) {
+                $scope.friends = resp.data.friends.data;
+                var array_of_fb_ids = [];
+                for (var i = 0; i < $scope.friends.length; i ++) {
+                  array_of_fb_ids.push($scope.friends[i].id);
+                }
+
+
+                
+                var Result = Parse.Object.extend("Result");
+                var result_lookup = new Parse.Query(Result);
+                result_lookup.equalTo("locationId", $stateParams.location_id);
+                result_lookup.containedIn("facebookId", array_of_fb_ids);
+                result_lookup.descending("distance");
+                
+                result_lookup.find({
+
+
+                    success: function(friends_results) {
+                      $scope.friends_result_combined = [];
+                      
+                      $scope.friends_text = "Your friends";
+                      if (friends_results.length == 0) {
+                        $ionicLoading.hide();
+                        $scope.friends_text = "Your friends haven't played this yet!"
+                      }
+                      for (var i = 0; i < friends_results.length; i++) {
+
+                        current_result = friends_results[i];
+                        var distance = current_result.attributes.distance.toFixed(0);
+                        var facebookId = current_result.attributes.facebookId;
+                        
+                        for (var i = 0; i < $scope.friends.length; i++) {
+                          current = $scope.friends[i];
+                          if (current.id == facebookId) {
+
+                            var name = current.name;
+                            var fb_picture = current.picture.data.url;
+                            
+                          }
+                        }
+                        
+                        var result_object = {distance: distance, name: name, fb_picture: fb_picture}
+                        $scope.friends_result_combined.push(result_object);
+                        $ionicLoading.hide();
+                      } 
+                            
+
+
+                    },
+                    error: function(error) {
+                              $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+                              // alert("Error: " + error.code + " " + error.message);
+                              $ionicLoading.hide();
+                            }
+                });
+              
+            }, function(err) {
+              console.error('ERR', err);
+              // err.status will contain the status code
+            })
+        
+      }
+      // END OF FACEBOOK FRIENDS RESULTS
+
+      else {
+        $scope.friends_text = "Sign in with Facebook";
+        $scope.friends_text_subheader = "Logout and sign up with Facebook to play with your friends!";
+        $ionicLoading.hide();
+      }
+
+      },
+      error: function(error) {
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
+        $ionicLoading.hide();
+      }
+      
+    });
+
+
+
+  
+    }
     
     //Format number with comma
     function numberWithCommas(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
+    function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
 })
 
-.controller('ChatsCtrl', function($scope, Chats) {
+.controller('ChatsCtrl', function($scope, Chats, $ionicPopup) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -671,7 +896,7 @@ query.get(Parse.User.current().id, {
 
 .controller('OfflineCtrl', function($scope, $stateParams, $ionicPopup) {
     
-    console.log(navigator.onLine);
+    mixpanel.track("Offline page view");
     $ionicPopup.alert({
                     title: "You're offlne!",
                     content: "Make sure you're connected to the internet and then tap the button to get going again!"
@@ -693,7 +918,7 @@ query.get(Parse.User.current().id, {
 
 })
 
-.controller('FullscreenCtrl', function($scope, $stateParams, $ionicLoading) {
+.controller('FullscreenCtrl', function($scope, $stateParams, $ionicLoading, $ionicPopup) {
   // Calculate left margin on buttons
   var buttonlength = .7 * window.innerWidth;
   $scope.left_margin = (window.innerWidth - buttonlength) / 2;
@@ -708,8 +933,10 @@ query.get(Parse.User.current().id, {
 
 })
 
-.controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory, $http) {
+.controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory, $http, $ionicPopup) {
   
+  mixpanel.track("Detail page view from account page");
+
   var currentUser = Parse.User.current();
 
     $ionicLoading.show({
@@ -844,7 +1071,11 @@ query.get(Parse.User.current().id, {
 
                     },
                     error: function(error) {
-                              alert("Error: " + error.code + " " + error.message);
+                              $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+                              // alert("Error: " + error.code + " " + error.message);
                               $ionicLoading.hide();
                             }
                 });
@@ -868,7 +1099,11 @@ query.get(Parse.User.current().id, {
 
       },
       error: function(error) {
-        alert("Error: " + error.code + " " + error.message);
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
         $ionicLoading.hide();
       }
     });
@@ -895,7 +1130,7 @@ function ordinal_suffix_of(i) {
 
 })
 
-.controller('AccountCtrl', function($state, $scope, $http, $ionicLoading, $stateParams) {
+.controller('AccountCtrl', function($state, $scope, $http, $ionicLoading, $stateParams, $ionicPopup) {
 mixpanel.track("Account page view");
 
     // REFRESH
@@ -939,7 +1174,7 @@ mixpanel.track("Account page view");
         $scope.distances = [];
         $scope.correct = 0;
         $scope.incorrect = 0;
-        $scope.best_guess = 50000;
+        $scope.best_guess = 9999;
         for (var i = 0; i < results.length; i++) {
           var object = results[i];
           user_result.push(object.get('locationId'));
@@ -978,7 +1213,11 @@ mixpanel.track("Account page view");
         },
 
         error: function(error){
-          alert("Error: " + error.code + " " + error.message);
+          $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+          // alert("Error: " + error.code + " " + error.message);
           $ionicLoading.hide();
         }
 
@@ -986,7 +1225,11 @@ mixpanel.track("Account page view");
 
       },
       error: function(error) {
-        alert("Error: " + error.code + " " + error.message);
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
         $ionicLoading.hide();
       }
     });
@@ -1037,7 +1280,11 @@ mixpanel.track("Account page view");
 
       },
       error: function(error) {
-        alert("Error: " + error.code + " " + error.message);
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
         $ionicLoading.hide();
       }
     });
@@ -1048,8 +1295,9 @@ mixpanel.track("Account page view");
 
       if (window.localStorage['sign_in_method'] == 'facebook') {
             var access_token = currentUser._serverData.authData.facebook.access_token;
-            var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture{url,height,is_silhouette,width}&access_token='+access_token;
-             
+            var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture.height(961)&access_token='+access_token;
+            
+
              $http.get(fb_prof_json_link).then(function(resp) {
               $scope.profile_image = resp.data.picture.data.url;
               $scope.username = resp.data.name;
