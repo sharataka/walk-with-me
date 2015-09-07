@@ -179,7 +179,7 @@ $scope.data = {
   };
 })
 
-.controller('LoginCtrl', function($scope, $state, $cordovaFacebook, $ionicPopup) {
+.controller('LoginCtrl', function($scope, $state, $cordovaFacebook, $ionicPopup, $ionicLoading) {
 
 mixpanel.track("Walkthrough view");
 
@@ -222,9 +222,22 @@ $scope.data = {
 
 $scope.loginFacebook = function(){
  
+
+      $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0,
+          duration: 5000
+        });
+
   //Browser Login
   if(!(ionic.Platform.isIOS() || ionic.Platform.isAndroid())){
- 
+    
+
+
+
     Parse.FacebookUtils.logIn("user_friends,email", {
       success: function(user) {
         if (!user.existed()) {
@@ -477,7 +490,9 @@ query.get(Parse.User.current().id, {
     var mapOptions = {
             center: myLatlng,
             zoom: 2,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }]}]
+
         };
 
     //Load the initial map
@@ -563,7 +578,8 @@ query.get(Parse.User.current().id, {
       var mapOptions = {
               center: guessCoor,
               zoom: 2,
-              mapTypeId: google.maps.MapTypeId.ROADMAP
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }]}]
           };
 
       //Load the initial map
@@ -691,6 +707,15 @@ query.get(Parse.User.current().id, {
     get_community_results();
 
     function get_community_results() {
+      
+      $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0
+        });
+
       var Result = Parse.Object.extend("Result");
       var result_query = new Parse.Query(Result);
       result_query.equalTo("locationId", $stateParams.location_id);
@@ -699,6 +724,7 @@ query.get(Parse.User.current().id, {
 
     success: function(results) {
         
+
         // Total number of guesses
         $scope.total_guesses = results.length;
         
@@ -745,7 +771,7 @@ query.get(Parse.User.current().id, {
         // End of getting user's rank
 
 
-
+        $ionicLoading.hide();
 
 
 
@@ -756,6 +782,15 @@ query.get(Parse.User.current().id, {
     // FACEBOOK FRIENDS RESULTS
       if (window.localStorage['sign_in_method'] == 'facebook') {
         
+
+      $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0,
+          duration: 5000
+        });
 
             var access_token = currentUser._serverData.authData.facebook.access_token;
 
@@ -826,6 +861,8 @@ query.get(Parse.User.current().id, {
               console.error('ERR', err);
               // err.status will contain the status code
             })
+
+        $ionicLoading.hide();
         
       }
       // END OF FACEBOOK FRIENDS RESULTS

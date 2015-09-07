@@ -58,7 +58,7 @@
 
 <div class = "row">
   <div class = "col col-100">
-    <center><h4><i class = "ion-person-stalker positive"></i>&nbsp; You placed {{rank}} out of {{total_guesses}} total guesses</h4></h4></center>
+    <center><h4><i class = "ion-person-stalker positive"></i>&nbsp; You placed {{rank}} out of {{total_guesses}} guesses</h4></h4></center>
   </div>
 </div>
 
@@ -98,12 +98,12 @@
         <img src = "{{friend.fb_picture}}" class = "profile_pic">
       </div>
 
-      <div class = "col col-20">
+      <div class = "col col-40">
         <center>{{friend.name}}</center>
       </div>
 
-      <div class = "col col-60">
-        <center>{{friend.distance}} km away</center>
+      <div class = "col col-40" align="right">
+        {{friend.distance}} km
       </div>
 
     </div>
@@ -113,7 +113,7 @@
   
 <div class = "row">
     <!-- NEXT BUTTON -->
-      <div class="col">
+      <div class="col" style = "padding-top: 25px; padding-bottom: 35px;">
         <center>
           <a class="button button-icon button-outline button-positive" href = "#/dash" style = "width:70%;">
             Next Destination&nbsp; <i class ="ion-chevron-right"></i>
