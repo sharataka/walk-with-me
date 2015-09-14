@@ -41,6 +41,12 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
       controller: 'LoginCtrl'
     })
 
+    .state('settings', {
+      url: '/settings',
+      templateUrl: 'templates/settings.html',
+      controller: 'SettingsCtrl'
+    })
+
     .state('offline', {
       url: '/offline',
       templateUrl: 'templates/offline.html',
@@ -95,6 +101,16 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
       'tab-dash': {
         templateUrl: 'templates/guess.html',
         controller: 'GuessCtrl'
+      }
+    }
+  })
+
+  .state('tab.friends', {
+    url: '/friends',
+    views: {
+      'tab-friends': {
+        templateUrl: 'templates/friends.html',
+        controller: 'FriendsCtrl'
       }
     }
   })

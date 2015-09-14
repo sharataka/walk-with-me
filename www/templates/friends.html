@@ -1,0 +1,73 @@
+<ion-view view-title="Friends" cache-view="true">
+
+  <ion-content>
+
+     <ion-refresher
+    pulling-text="Pull to refresh..."
+    on-refresh="refresh()">
+  </ion-refresher>
+
+<!-- Show leaderboard if logged in facebook -->
+<div ng-if="fb_logged_in == 'true'">
+   
+      <div class = "row">
+
+      <div class = "col col-60">
+        <center>
+          <strong>Name</strong>
+        </center>
+      </div>
+
+      <div class = "col col-40" align="right">
+        <label>
+          <strong>Win% (Wins-Losses)</strong>
+        </label>
+        
+      </div>
+
+    </div>
+
+<ion-item collection-repeat="friend in friends_leaderboard" style = "border:0px;">
+    <div class = "row">
+
+      <div class = "col col-20">
+        <img src = "{{friend.fb_picture}}" class = "profile_pic">
+      </div>
+
+      <div class = "col col-40">
+        <label>{{friend.name}}</label>
+      </div>
+
+      <div class = "col col-40" align="right">
+        <label class = "positive">
+          <strong>{{friend.win_percentage}}%</strong>
+        </label>
+        
+        <label>
+          ({{friend.wins}}-{{friend.losses}})
+        </label>
+
+      </div>
+
+    </div>
+</ion-item>
+
+</div>
+<!-- end of if logged in facebook -->
+
+<div ng-if="fb_logged_in != 'true'">
+  <div class = "row">
+    <div class = "col">
+      <p>Log out and sign in with Facebook to challenge your friends!</p>
+    </div>
+  </div>
+  
+
+</div>
+
+   	
+
+
+
+  </ion-content>
+</ion-view>

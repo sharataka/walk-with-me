@@ -1,5 +1,163 @@
 angular.module('starter.controllers', [])
 
+.controller('SettingsCtrl', function($scope, $stateParams, $ionicLoading, Chats, $state) {
+    
+    // Go back to account
+    $scope.goToAccount = function(item,event) {
+      $state.go('tab.account');
+    }
+    // End of go back to account
+
+  //LOGOUT BUTTON
+  $scope.logout = function(item,event){
+    Parse.User.logOut();
+    window.localStorage.clear();
+    $state.go('login');
+  };
+  // END OF LOGUT BUTTON
+
+})
+
+.controller('FriendsCtrl', function($scope, $stateParams, $ionicLoading, Chats, $state, $http) {
+
+ // REFRESH
+  $scope.refresh = function () {
+        setTimeout(function () {
+          window.location.reload(true); 
+    }, 750);
+
+
+  };
+  // END OF REFRESH
+
+
+var currentUser = Parse.User.current();
+
+  $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0
+        });
+
+if (window.localStorage['sign_in_method'] == 'facebook') {
+            
+            $scope.fb_logged_in = 'true';
+            var access_token = currentUser._serverData.authData.facebook.access_token;
+
+            // friends 
+            var fql_query_url = 'https://graph.facebook.com/me?fields=friends{picture{url},name,id}&access_token='+access_token;
+            //$scope.friends_result_combined = [];
+
+            $http.get(fql_query_url).then(function(resp) {
+                $scope.friends = resp.data.friends.data;
+                $scope.array_of_fb_ids = [];
+                for (var i = 0; i < $scope.friends.length; i ++) {
+                  $scope.array_of_fb_ids.push($scope.friends[i].id);
+                }
+
+                var Result = Parse.Object.extend("User");
+                var result_lookup = new Parse.Query(Result);
+                result_lookup.descending("numberOfGuesses");
+                result_lookup.containedIn("facebookId", $scope.array_of_fb_ids);
+                
+                result_lookup.find({
+
+                    success: function(friends_results) {
+
+                      $scope.friends_leaderboard = [];
+                      for (i = 0; i < $scope.friends.length; i++) {
+                          
+                          var name = $scope.friends[i].name;
+                          var fb_picture = $scope.friends[i].picture.data.url;
+
+                          for (j = 0; j < friends_results.length; j++) {
+                            if ( $scope.friends[i].id == friends_results[j].attributes.facebookId ) {
+                              
+                              if (friends_results[j].attributes.numberOfGuesses == undefined) {
+                                wins = 0;
+                                number_of_guesses = 0;
+                                win_percentage = 0;
+                                losses = 0;
+                              }
+                              else {
+                                var wins = friends_results[j].attributes.wins;
+                                var number_of_guesses = friends_results[j].attributes.numberOfGuesses;
+                                var losses = number_of_guesses - wins;
+                                var win_percentage = ( Number(wins) / Number(number_of_guesses) * 100).toFixed(0);
+                              }
+
+                            } 
+                          } 
+
+
+                          var individual_friend_results = {name:name, fb_picture:fb_picture, win_percentage:win_percentage, number_of_guesses:number_of_guesses, wins:wins, losses:losses};
+                          $scope.friends_leaderboard.push(individual_friend_results);
+                      }
+
+
+                      var User = Parse.Object.extend("User");
+                      var query = new Parse.Query(User);
+                      query.get(Parse.User.current().id, {
+                        // The object was retrieved successfully.
+                        success: function(retreive_user) {
+
+                            var fb_prof_json_link = 'https://graph.facebook.com/me?fields=id,name,email,picture.height(961)&access_token='+access_token;
+            
+
+                           $http.get(fb_prof_json_link).then(function(resp) {
+                            var profile_image = resp.data.picture.data.url;
+                            var name = resp.data.name;
+                            if (retreive_user.attributes.numberOfGuesses == undefined) {
+                                wins = 0;
+                                number_of_guesses = 0;
+                                win_percentage = 0;
+                                losses = 0;
+                              }
+                              else {
+                                var wins = retreive_user.attributes.wins;
+                                var number_of_guesses = retreive_user.attributes.numberOfGuesses;
+                                var losses = number_of_guesses - wins;
+                                var win_percentage = ( Number(wins) / Number(number_of_guesses) * 100).toFixed(0);
+                              }
+
+                          var individual_friend_results = {name:name, fb_picture:profile_image, win_percentage:win_percentage, number_of_guesses:number_of_guesses, wins:wins, losses:losses};
+                          $scope.friends_leaderboard.push(individual_friend_results);
+
+                          $scope.friends_leaderboard.sort(function(a, b){
+                           return b.win_percentage-a.win_percentage
+                          });
+
+                          $ionicLoading.hide();
+
+                          });
+
+                        }
+                      });
+                      
+
+
+
+                    }
+
+                });
+
+
+              });
+
+
+
+
+          }
+
+      else {
+        $ionicLoading.hide();
+      }
+
+    
+})
+
 .controller('DashCtrl', function($scope, $state, $ionicLoading, Chats, $ionicPopup) {
   
 
@@ -58,13 +216,7 @@ angular.module('starter.controllers', [])
   // END OF IF NO CURRENT USER
 
 
-  //LOGOUT BUTTON
-  $scope.logout = function(item,event){
-    Parse.User.logOut();
-    window.localStorage.clear();
-    $state.go('login');
-  };
-  // END OF LOGUT BUTTON
+
 
   // REFRESH
   $scope.refresh = function () {
@@ -243,6 +395,7 @@ $scope.loginFacebook = function(){
         if (!user.existed()) {
           window.localStorage['sign_in_method'] = 'facebook';
           mixpanel.track("Login: facebook");
+          
           var User = Parse.Object.extend("User");
           var query = new Parse.Query(User);
           query.get(Parse.User.current().id, {
@@ -662,6 +815,53 @@ query.get(Parse.User.current().id, {
       
       result.save(null, {
         success: function(result) {
+
+          var User = Parse.Object.extend("User");
+          var query = new Parse.Query(User);
+          query.get(Parse.User.current().id, {
+            // The object was retrieved successfully.
+            success: function(retreive_user) {
+
+                if (retreive_user.attributes.numberOfGuesses == undefined) {
+                  var numberofGuesses = 0; 
+                } else {
+                  var numberofGuesses = Number(retreive_user.attributes.numberOfGuesses);
+                }
+
+                if (retreive_user.attributes.wins == undefined) {
+                  var numberofWins = 0; 
+                } else {
+                  var numberofWins = Number(retreive_user.attributes.wins);
+                }
+                
+
+                // Update object
+                retreive_user.save(null, {
+                  success: function(update_user) {
+                    
+                    numberofGuesses++;
+                    
+                    if ($scope.round_status == "Correct") {
+                      numberofWins++;
+                      update_user.set("wins", numberofWins);
+                      update_user.set("numberOfGuesses", numberofGuesses);
+                      update_user.save();
+                    }
+                    else {
+                      update_user.set("numberOfGuesses", numberofGuesses);
+                      update_user.save();
+                    }
+
+                    
+                  }
+                });
+            },
+            error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+            }
+          });
+
           
         },
         error: function(result, error) {
@@ -1291,43 +1491,6 @@ mixpanel.track("Account page view");
 
 
 
-  $scope.deletedata = function () {
-    var Result = Parse.Object.extend("Result");
-    var result_query = new Parse.Query(Result);
-    result_query.equalTo("user", currentUser.id);
-    result_query.find({
-
-    success: function(results) {
-
-        
-        for (var i = 0; i < results.length; i++) {
-
-                results[i].destroy({
-                  success: function(myObject) {
-                    // The object was deleted from the Parse Cloud.
-                    console.log('success');
-                  },
-                  error: function(myObject, error) {
-                    // The delete failed.
-                    // error is a Parse.Error with an error code and message.
-                    console.log('error');
-                  }
-                });
-        }
-
-      },
-      error: function(error) {
-        $ionicPopup.alert({
-                        title: "Uh oh!",
-                        content: "Swipe down to refresh"
-                    })  
-        // alert("Error: " + error.code + " " + error.message);
-        $ionicLoading.hide();
-      }
-    });
-    // END OF PARSE DB QUERY
-  }
-
   
 
       if (window.localStorage['sign_in_method'] == 'facebook') {
@@ -1354,6 +1517,7 @@ mixpanel.track("Account page view");
                                     // Now let's update it with some new data. In this case, only cheatMode and score
                                     // will get sent to the cloud. playerName hasn't changed.
                                     update_user.set("email", email);
+                                    update_user.set("fbName", $scope.username);
                                     update_user.save();
                                     window.localStorage['email'] = email;
                                   }
@@ -1368,6 +1532,7 @@ mixpanel.track("Account page view");
               // End of saving email in database
 
             })
+
 
       }
 
