@@ -158,8 +158,11 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
     
 })
 
-.controller('DashCtrl', function($scope, $state, $ionicLoading, Chats, $ionicPopup) {
-  
+.controller('DashCtrl', function($scope, $state, $ionicLoading, Chats, $ionicPopup, $ionicHistory) {
+
+    $ionicHistory.nextViewOptions({
+      disableAnimate: true
+    });
 
   mixpanel.track("Home page view");
 
@@ -613,8 +616,12 @@ query.get(Parse.User.current().id, {
 
 })
 
-.controller('GuessCtrl', function($scope, $state, $stateParams, $ionicPopup) {
+.controller('GuessCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicLoading, $ionicHistory) {
 
+    $ionicHistory.nextViewOptions({
+      disableAnimate: true
+    });
+  
   mixpanel.track("Guess page view");
 
   // Calculate left margin on buttons
@@ -684,7 +691,14 @@ query.get(Parse.User.current().id, {
   google.maps.event.addDomListener(document.getElementById("map"), 'load', $scope.initialise());
 
       // DISPLAY IMAGE AGAIN
-    
+        
+        $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0
+        });
 
       var CoorList = Parse.Object.extend("CoorList");
       var query = new Parse.Query(CoorList);
@@ -695,12 +709,15 @@ query.get(Parse.User.current().id, {
           localStorage.image = results[0].attributes.imageLink;
           localStorage.answer = results[0].attributes.Answer;
 
+          $ionicLoading.hide();
+
         },
         error: function(error) {
           $ionicPopup.alert({
                         title: "Error",
                         content: "Swipe down to refresh"
                     })
+          $ionicLoading.hide();
           // alert("Error: " + error.code + " " + error.message);
         }
       });
@@ -708,7 +725,13 @@ query.get(Parse.User.current().id, {
 
 })
 
-.controller('ResultCtrl', function($scope, $state, $stateParams, $ionicPopup, $http, $ionicLoading) {
+.controller('ResultCtrl', function($scope, $state, $stateParams, $ionicPopup, $http, $ionicLoading, $ionicHistory) {
+
+    $ionicHistory.clearHistory();
+    $ionicHistory.nextViewOptions({
+      disableAnimate: true,
+      disableBack: true
+    });
 
     var currentUser = Parse.User.current();
 
@@ -1373,7 +1396,8 @@ mixpanel.track("Account page view");
     // REFRESH
   $scope.refresh = function (){
         setTimeout(function () {
-          window.location.reload(true); 
+          getlocations(currentUser);
+          $scope.$broadcast('scroll.refreshComplete'); 
     }, 750);
 
       };
