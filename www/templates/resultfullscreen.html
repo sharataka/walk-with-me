@@ -11,14 +11,42 @@
 
   <ion-content>
 
-
-    <img class = "login_image" src = "{{imageLink}}" style = "height: {{height}}px; ">
+<!-- IMAGE -->
+    <img class = "login_image" src = "{{imageLink}}" style = "height: {{height}}px;" on-double-tap="heart()">
 
     <div class = "loginsubheader" style = "left:{{left_margin}}px; font-size:60px; top: 0px; ">
         <span>
             {{answer}}
         </span>
     </div>
+<!-- END OF IMAGE -->
+
+<!-- LIKE -->
+
+  <div class = "row">
+      
+      <div ng-if="is_hearted == 'true'">
+        <div class="col">
+            <a class="button button-icon clear" on-tap = "unheart()">
+              <i class ="ion-ios-heart assertive" style = "font-size: 30px;"></i>
+            </a>
+        </div>
+      </div>
+
+      <div ng-if="is_hearted == 'false'">
+        <div class="col col-20">
+            <a class="button button-icon clear" on-tap = "heart()">
+              <i class ="ion-ios-heart-outline assertive" style = "font-size: 30px;"></i>
+            </a>
+        </div>
+      </div>
+      
+  </div>
+
+<!-- END OF LIKE -->
+
+
+
 
 <!-- COMMUNITY -->
 <hr style = "width:20%">

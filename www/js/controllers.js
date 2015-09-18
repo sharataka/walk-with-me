@@ -1209,6 +1209,21 @@ query.get(Parse.User.current().id, {
 
 .controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory, $http, $ionicPopup) {
   
+  
+  // HEART PICTURE
+  $scope.is_hearted = 'false';
+  
+  $scope.heart = function() {
+    $scope.is_hearted = 'true';
+    console.log('heart');
+  };
+
+  $scope.unheart = function() {
+    $scope.is_hearted = 'false';
+    console.log('unheart');
+  };
+  // END OF HEART PICTURE
+
   mixpanel.track("Detail page view from account page");
 
   var currentUser = Parse.User.current();
@@ -1428,7 +1443,7 @@ var currentUser = Parse.User.current();
   $scope.loadMore = function() {
       
       $scope.page++;
-      $scope.skip = 15 * ($scope.page - 1);
+      $scope.skip = 15 * ($scope.page);
       getlocations(currentUser,$scope.skip);
       
   };
