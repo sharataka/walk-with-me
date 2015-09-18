@@ -31,7 +31,7 @@
 
   <div class = "row">
 
-      <div class="col col-33">
+      <div class="col col-50">
         <center>
           <h4 style = "color: white; background: rgba(0, 0, 0 , 0.7); padding: 10px;">
             <i class ="ion-checkmark"></i> {{correct}}
@@ -40,26 +40,11 @@
         </center>
       </div>
       
-      
-
-
-
-      <div class="col col-33">
+      <div class="col col-50">
         <center>
           <h4 style = "color: white; background: rgba(0, 0, 0 , 0.7); padding: 10px;">
             <i class ="ion-close"></i> {{incorrect}}
             <br><small>Incorrect</small>
-          </h4>
-        </center>
-      </div>
-
-      
-
-      <div class="col col-33">
-        <center>
-          <h4 style = "color: white; background: rgba(0, 0, 0 , 0.7); padding: 10px;">
-            <i class ="ion-ios-location"></i> {{best_guess}} km
-            <br><small>Best Guess</small>
           </h4>
         </center>
       </div>
@@ -69,7 +54,7 @@
 </div>
     
   <!-- RESULTS TEXT   -->
-  <div class = "row"> 
+  <div class = "row" id = "results"> 
       <h4>&nbsp;<i class = "ion-images positive"></i> Results</h4>
   </div>
   <!-- END OF RESULTS TEXT -->
@@ -92,6 +77,19 @@
 
     </div>
     
+
+<div class = "row">
+    <!-- NEXT BUTTON -->
+      <div class="col" style = "padding-top: 25px; padding-bottom: 35px;">
+        <center>
+          <a class="button button-icon button-outline button-positive" style = "width:70%;" on-tap = "loadMore()">
+            Load More&nbsp; <i class ="ion-chevron-right"></i>
+          </a>
+
+        </center>
+      </div>
+
+</div>
 
   </ion-content>
 </ion-view>

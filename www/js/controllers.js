@@ -23,7 +23,8 @@ angular.module('starter.controllers', [])
  // REFRESH
   $scope.refresh = function () {
         setTimeout(function () {
-          window.location.reload(true); 
+          getFacebookScores();
+          $scope.$broadcast('scroll.refreshComplete');
     }, 750);
 
 
@@ -32,14 +33,17 @@ angular.module('starter.controllers', [])
 
 
 var currentUser = Parse.User.current();
+getFacebookScores();
 
-  $ionicLoading.show({
-          content: 'Loading',
-          animation: 'fade-in',
-          showBackdrop: true,
-          maxWidth: 200,
-          showDelay: 0
-        });
+function getFacebookScores() {
+
+$ionicLoading.show({
+    content: 'Loading',
+    animation: 'fade-in',
+    showBackdrop: true,
+    maxWidth: 200,
+    showDelay: 0
+  });
 
 if (window.localStorage['sign_in_method'] == 'facebook') {
             
@@ -154,6 +158,9 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
       else {
         $ionicLoading.hide();
       }
+}
+
+  
 
     
 })
@@ -181,6 +188,9 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
         });
 
 
+  mainFunctionToLoadLocations();
+
+  function mainFunctionToLoadLocations() {
 
   if (currentUser) {
 
@@ -218,13 +228,17 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
   }
   // END OF IF NO CURRENT USER
 
+  }
+
+
 
 
 
   // REFRESH
   $scope.refresh = function () {
         setTimeout(function () {
-          window.location.reload(true); 
+          mainFunctionToLoadLocations();
+          $scope.$broadcast('scroll.refreshComplete'); 
     }, 750);
 
 
@@ -1390,72 +1404,80 @@ function ordinal_suffix_of(i) {
 
 })
 
-.controller('AccountCtrl', function($state, $scope, $http, $ionicLoading, $stateParams, $ionicPopup) {
+.controller('AccountCtrl', function($state, $scope, $http, $ionicLoading, $stateParams, $ionicPopup, $ionicScrollDelegate) {
 mixpanel.track("Account page view");
+var currentUser = Parse.User.current();
 
-    // REFRESH
+  // REFRESH
   $scope.refresh = function (){
-        setTimeout(function () {
+    
+    setTimeout(function () {
           getlocations(currentUser);
           $scope.$broadcast('scroll.refreshComplete'); 
     }, 750);
 
-      };
-      // end of refresh
+  };
+  // end of refresh
 
   $scope.windowWidth = window.innerWidth;
   $scope.leftMarginProfilePicture = window.innerWidth / 2 - 25;
   $scope.windowDividedBy3 = $scope.windowWidth / 3;
 
+  $scope.page = 0;
+  $scope.skip = 15 * ($scope.page);
+  $scope.loadMore = function() {
+      
+      $scope.page++;
+      $scope.skip = 15 * ($scope.page - 1);
+      getlocations(currentUser,$scope.skip);
+      
+  };
 
-  $ionicLoading.show({
-          content: 'Loading',
-          animation: 'fade-in',
-          showBackdrop: true,
-          maxWidth: 200,
-          showDelay: 0,
-          duration: 5000
-        });
 
+  getlocations(currentUser,$scope.skip);
+  getUserStats();
 
-  var currentUser = Parse.User.current();
-  getlocations(currentUser);
-  
+  function getUserStats() {
+    var User = Parse.Object.extend("User");
+    var query = new Parse.Query(User);
+    query.get(Parse.User.current().id, {
+      // The object was retrieved successfully.
+      success: function(retreive_user) {
+        $scope.correct = Number(retreive_user.attributes.wins);
+        total_played = Number(retreive_user.attributes.numberOfGuesses);
+        $scope.incorrect = total_played - $scope.correct;
+      }
+    });
+  }
 
   // Make db call to get locations played
-  function getlocations(currentUser){
+  function getlocations(currentUser, skip){
+  
+    $ionicLoading.show({
+      content: 'Loading',
+      animation: 'fade-in',
+      showBackdrop: true,
+      maxWidth: 200,
+      showDelay: 0,
+      duration: 5000
+    });
+
     var Result = Parse.Object.extend("Result");
     var result_query = new Parse.Query(Result);
     result_query.equalTo("user", currentUser.id);
+    result_query.limit(15);
+    result_query.skip(skip);
+    result_query.descending('createdAt');
     result_query.find({
 
     success: function(results) {
 
         user_result = [];
         $scope.distances = [];
-        $scope.correct = 0;
-        $scope.incorrect = 0;
-        $scope.best_guess = 9999;
         for (var i = 0; i < results.length; i++) {
           var object = results[i];
           user_result.push(object.get('locationId'));
           
-          // Counts wins and losses
-          if (object.get('distance') < 501) {
-            $scope.correct = $scope.correct + 1;
-          } else {
-            $scope.incorrect = $scope.incorrect +1 ;
-          }
-          // End of counting wins and losses
-
-          // Best guess
-          if (object.get('distance') < $scope.best_guess) {
-            $scope.best_guess = object.get('distance');
-            $scope.best_guess = $scope.best_guess.toFixed(0);
-          }
-          // End of best guess
-
-          $scope.distances.push(object.get('distance'));
         }
         
         var CoorList = Parse.Object.extend("CoorList");
@@ -1468,7 +1490,13 @@ mixpanel.track("Account page view");
           
           window.localStorage['played_locations'] = JSON.stringify(locations);
           var testObject = JSON.parse(window.localStorage['played_locations']);
-          $scope.played_locations = testObject;
+          if ($scope.page == 0) {
+            $scope.played_locations = testObject;
+          }
+          else {
+            $scope.played_locations = $scope.played_locations.concat(testObject);  
+          }
+          
           $ionicLoading.hide();
             
         },
@@ -1498,6 +1526,7 @@ mixpanel.track("Account page view");
 
   }
   // End of getlocations
+
 
 
   // TAP TO GO TO FULLSCREEN
