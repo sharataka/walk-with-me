@@ -77,6 +77,12 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
       controller: 'SignupCtrl'
     })
 
+    .state('result', {
+      url: '/result/{location_id}/{actual_lat}/{actual_lng}',
+      templateUrl: 'templates/result.html',
+      controller: 'ResultCtrl'
+    })
+
     .state('tab', {
     url: '/tab',
     abstract: true,

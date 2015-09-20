@@ -266,7 +266,8 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
         var query = new Parse.Query(CoorList);
         query.ascending("createdAt");
         query.notContainedIn("objectId", user_result);
-        query.limit(8);
+        query.limit(4);
+        query.equalTo("Status", "live");
         query.find({
                   
         success: function(locations) {
@@ -652,7 +653,7 @@ query.get(Parse.User.current().id, {
                     })
     }
     else {
-      $state.go('tab.result', { location_id: $stateParams.location_id, actual_lat:$stateParams.actual_lat, actual_lng:$stateParams.actual_lng });
+      $state.go('result', { location_id: $stateParams.location_id, actual_lat:$stateParams.actual_lat, actual_lng:$stateParams.actual_lng });
     } 
   };
 
@@ -853,6 +854,8 @@ query.get(Parse.User.current().id, {
       result.save(null, {
         success: function(result) {
 
+          get_community_results();
+          
           var User = Parse.Object.extend("User");
           var query = new Parse.Query(User);
           query.get(Parse.User.current().id, {
@@ -941,7 +944,7 @@ query.get(Parse.User.current().id, {
     
     google.maps.event.addDomListener(document.getElementById("map_result"), 'load', $scope.initialise());
 
-    get_community_results();
+    
 
     function get_community_results() {
       
@@ -1051,7 +1054,7 @@ query.get(Parse.User.current().id, {
                 
                 result_lookup.find({
 
-
+                    // Start of db success query
                     success: function(friends_results) {
                       $scope.friends_result_combined = [];
                       
@@ -1080,27 +1083,26 @@ query.get(Parse.User.current().id, {
                         $scope.friends_result_combined.push(result_object);
                         $ionicLoading.hide();
                       } 
-                            
-
-
+                          
                     },
+                    // End of db success query
+                    
+                    // Beginning of error
                     error: function(error) {
-                              $ionicPopup.alert({
-                        title: "Uh oh!",
-                        content: "Swipe down to refresh"
-                    })  
-                              // alert("Error: " + error.code + " " + error.message);
-                              $ionicLoading.hide();
-                            }
+                        $ionicPopup.alert({
+                          title: "Uh oh!",
+                          content: "Swipe down to refresh"
+                        })          
+                      $ionicLoading.hide();
+                    }
+                    // End of error
                 });
               
             }, function(err) {
               console.error('ERR', err);
-              // err.status will contain the status code
+              $ionicLoading.hide();
             })
-
-        $ionicLoading.hide();
-        
+ 
       }
       // END OF FACEBOOK FRIENDS RESULTS
 
@@ -1121,9 +1123,6 @@ query.get(Parse.User.current().id, {
       }
       
     });
-
-
-
   
     }
     
@@ -1131,21 +1130,24 @@ query.get(Parse.User.current().id, {
     function numberWithCommas(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
+    // End of number with commas
 
+    // Add ordinal suffix
     function ordinal_suffix_of(i) {
-    var j = i % 10,
-        k = i % 100;
-    if (j == 1 && k != 11) {
-        return i + "st";
+      var j = i % 10,
+          k = i % 100;
+      if (j == 1 && k != 11) {
+          return i + "st";
+      }
+      if (j == 2 && k != 12) {
+          return i + "nd";
+      }
+      if (j == 3 && k != 13) {
+          return i + "rd";
+      }
+      return i + "th";
     }
-    if (j == 2 && k != 12) {
-        return i + "nd";
-    }
-    if (j == 3 && k != 13) {
-        return i + "rd";
-    }
-    return i + "th";
-}
+    // End of ordinal suffix
 
 })
 
@@ -1425,7 +1427,8 @@ var currentUser = Parse.User.current();
 
   // REFRESH
   $scope.refresh = function (){
-    
+    $scope.page = 0;
+    $scope.skip = 15 * ($scope.page);
     setTimeout(function () {
           getlocations(currentUser);
           $scope.$broadcast('scroll.refreshComplete'); 
