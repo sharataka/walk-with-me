@@ -83,84 +83,108 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
       controller: 'ResultCtrl'
     })
 
-    .state('tab', {
-    url: '/tab',
-    abstract: true,
-    templateUrl: 'templates/tabs.html'
+  .state('dash', {
+      url: '/dash',
+      templateUrl: 'templates/tab-dash.html',
+      controller: 'DashCtrl'
   })
+
+  .state('account', {
+      url: '/account',
+      templateUrl: 'templates/tab-account.html',
+      controller: 'AccountCtrl'
+  })
+
+  .state('guess', {
+      url: '/guess/{location_id}/{actual_lat}/{actual_lng}',
+      templateUrl: 'templates/guess.html',
+      controller: 'GuessCtrl'
+  })
+
+  .state('friends', {
+      url: '/friends',
+      templateUrl: 'templates/friends.html',
+      controller: 'FriendsCtrl'
+  });
+
+  //   .state('tab', {
+  //   url: '/tab',
+  //   abstract: true,
+  //   templateUrl: 'templates/tabs.html'
+  // })
 
   // Each tab has its own nav history stack:
 
-  .state('tab.dash', {
-    url: '/dash',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
-      }
-    }
-  })
+  // .state('tab.dash', {
+  //   url: '/dash',
+  //   views: {
+  //     'tab-dash': {
+  //       templateUrl: 'templates/tab-dash.html',
+  //       controller: 'DashCtrl'
+  //     }
+  //   }
+  // })
 
-  .state('tab.guess', {
-    url: '/guess/{location_id}/{actual_lat}/{actual_lng}',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/guess.html',
-        controller: 'GuessCtrl'
-      }
-    }
-  })
+  // .state('tab.guess', {
+  //   url: '/guess/{location_id}/{actual_lat}/{actual_lng}',
+  //   views: {
+  //     'tab-dash': {
+  //       templateUrl: 'templates/guess.html',
+  //       controller: 'GuessCtrl'
+  //     }
+  //   }
+  // })
 
-  .state('tab.friends', {
-    url: '/friends',
-    views: {
-      'tab-friends': {
-        templateUrl: 'templates/friends.html',
-        controller: 'FriendsCtrl'
-      }
-    }
-  })
+  // .state('tab.friends', {
+  //   url: '/friends',
+  //   views: {
+  //     'tab-friends': {
+  //       templateUrl: 'templates/friends.html',
+  //       controller: 'FriendsCtrl'
+  //     }
+  //   }
+  // })
 
-  .state('tab.result', {
-    url: '/result/{location_id}/{actual_lat}/{actual_lng}',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/result.html',
-        controller: 'ResultCtrl'
-      }
-    }
-  })
+  // .state('tab.result', {
+  //   url: '/result/{location_id}/{actual_lat}/{actual_lng}',
+  //   views: {
+  //     'tab-dash': {
+  //       templateUrl: 'templates/result.html',
+  //       controller: 'ResultCtrl'
+  //     }
+  //   }
+  // })
 
-  .state('tab.chats', {
-      url: '/chats',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
+  // .state('tab.chats', {
+  //     url: '/chats',
+  //     views: {
+  //       'tab-chats': {
+  //         templateUrl: 'templates/tab-chats.html',
+  //         controller: 'ChatsCtrl'
+  //       }
+  //     }
+  //   })
+  //   .state('tab.chat-detail', {
+  //     url: '/chats/:chatId',
+  //     views: {
+  //       'tab-chats': {
+  //         templateUrl: 'templates/chat-detail.html',
+  //         controller: 'ChatDetailCtrl'
+  //       }
+  //     }
+  //   });
 
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
-  });
+  // .state('tab.account', {
+  //   url: '/account',
+  //   views: {
+  //     'tab-account': {
+  //       templateUrl: 'templates/tab-account.html',
+  //       controller: 'AccountCtrl'
+  //     }
+  //   }
+  // });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/dash');
 
 });

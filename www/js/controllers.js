@@ -1,12 +1,7 @@
 angular.module('starter.controllers', [])
 
 .controller('SettingsCtrl', function($scope, $stateParams, $ionicLoading, Chats, $state) {
-    
-    // Go back to account
-    $scope.goToAccount = function(item,event) {
-      $state.go('tab.account');
-    }
-    // End of go back to account
+  
 
   //LOGOUT BUTTON
   $scope.logout = function(item,event){
@@ -167,17 +162,31 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
 
 .controller('DashCtrl', function($scope, $state, $ionicLoading, Chats, $ionicPopup, $ionicHistory) {
 
-    $ionicHistory.nextViewOptions({
-      disableAnimate: true
-    });
+  $ionicHistory.nextViewOptions({
+    disableAnimate: true
+  });
 
   mixpanel.track("Home page view");
+
+  $scope.map_status = 'button-outline';
+
+  $scope.getMap = function() {
+    $scope.pics_status = 'button-outline';
+    $scope.map_status = '';
+    $scope.locations = '';
+  }
+
+  $scope.getPics = function() {
+    $scope.pics_status = '';
+    $scope.map_status = 'button-outline';
+  }
 
   $scope.windowWidth = window.innerWidth;
   $scope.heightWidth = window.innerHeight - 100;
   var currentUser = Parse.User.current();
   $scope.locations = '';
   $scope.refresh_message = "Answer the pictures above to get more...";
+
   $ionicLoading.show({
           content: 'Loading',
           animation: 'fade-in',
@@ -312,7 +321,7 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
 
     $scope.fullscreenImage = function(item_index){
       // $state.go('fullscreen', {objectId:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long , image_Link: encodeURI($scope.locations[item_index].imageLink) })
-      $state.go('tab.guess', {location_id:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long })
+      $state.go('guess', {location_id:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long })
   };
   
 })
@@ -333,7 +342,7 @@ $scope.data = {
     Parse.User.logIn($scope.data.username, $scope.data.password, {
       success: function(user) {
         window.localStorage['sign_in_method'] = 'username';
-        $state.go('tab.dash');
+        $state.go('dash');
         
       },
       error: function(user, error) {
@@ -373,7 +382,7 @@ $scope.data = {
     Parse.User.logIn('sharataka', 'goldengun', {
       success: function(user) {
         window.localStorage['sign_in_method'] = 'username';
-        $state.go('tab.dash');
+        $state.go('dash');
       },
       error: function(user, error) {
         $ionicPopup.alert({
@@ -436,7 +445,7 @@ $scope.loginFacebook = function(){
             }
           });
 
-          $state.go('tab.dash');
+          $state.go('dash');
           
         } 
 
@@ -467,7 +476,7 @@ $scope.loginFacebook = function(){
           });
 
 
-          $state.go('tab.dash');
+          $state.go('dash');
           
         }
       },
@@ -529,7 +538,7 @@ query.get(Parse.User.current().id, {
 });
 
 
-            $state.go('tab.dash');
+            $state.go('dash');
           } else {
             window.localStorage['sign_in_method'] = 'facebook';
 
@@ -556,7 +565,7 @@ query.get(Parse.User.current().id, {
 });
 
 
-            $state.go('tab.dash');
+            $state.go('dash');
           }
         },
         error: function(user, error) {
@@ -614,7 +623,7 @@ query.get(Parse.User.current().id, {
       success: function(user) {
         // Hooray! Let them use the app now.
         window.localStorage['sign_in_method'] = 'username';
-        $state.go('tab.dash');
+        $state.go('dash');
 
       },
       error: function(user, error) {
@@ -633,77 +642,78 @@ query.get(Parse.User.current().id, {
 
 .controller('GuessCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicLoading, $ionicHistory) {
 
-    $ionicHistory.nextViewOptions({
-      disableAnimate: true
-    });
-  
-  mixpanel.track("Guess page view");
+          $ionicHistory.nextViewOptions({
+            disableAnimate: true
+          });
+        
+        mixpanel.track("Guess page view");
 
-  // Calculate left margin on buttons
-  var buttonlength = .7 * window.innerWidth;
-  $scope.left_margin = (window.innerWidth - buttonlength) / 2;
-  $scope.heightWidth = window.innerHeight;
+        // Calculate left margin on buttons
+        var buttonlength = .7 * window.innerWidth;
+        $scope.left_margin = (window.innerWidth - buttonlength) / 2;
+        $scope.heightWidth = window.innerHeight;
 
-  //Click button to make a guess
-  $scope.onTouch = function(item,event){
-    if ($scope.coordinates == null) {
-      $ionicPopup.alert({
-                        title: "You haven't made a guess",
-                        content: "Tap on the map to drop a pin and make a guess."
-                    })
-    }
-    else {
-      $state.go('result', { location_id: $stateParams.location_id, actual_lat:$stateParams.actual_lat, actual_lng:$stateParams.actual_lng });
-    } 
-  };
+        //Click button to make a guess
+        $scope.onTouch = function(item,event){
+          if ($scope.coordinates == null) {
+            $ionicPopup.alert({
+                              title: "You haven't made a guess",
+                              content: "Tap on the map to drop a pin and make a guess."
+                          })
+          }
+          else {
+            $state.go('result', { location_id: $stateParams.location_id, actual_lat:$stateParams.actual_lat, actual_lng:$stateParams.actual_lng });
+          } 
+        };
 
-  $scope.initialise = function() {
-    var myLatlng = new google.maps.LatLng(37.758446, -122.411789);
-    var markersArray = [];
+        $scope.initialise = function() {
+          var myLatlng = new google.maps.LatLng(37.758446, -122.411789);
+          var markersArray = [];
 
-    //Initial settings for the map
-    var mapOptions = {
-            center: myLatlng,
-            zoom: 2,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }]}]
+          //Initial settings for the map
+          var mapOptions = {
+                  center: myLatlng,
+                  zoom: 2,
+                  mapTypeId: google.maps.MapTypeId.ROADMAP,
+                  styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }]}]
+
+              };
+
+          //Load the initial map
+           var map = new google.maps.Map(document.getElementById("map"), mapOptions); 
+          
+
+          //Event listener to add a marker      
+          google.maps.event.addListener(map, 'click', function(e) {
+            clearOverlays();
+            placeMarker(e.latLng, map);
+            $scope.coordinates = e.latLng;
+            localStorage.userLat = $scope.coordinates.lat();
+            localStorage.userLong = $scope.coordinates.lng();
+          });
+
+          //Actual function to add a marker
+          function placeMarker(position, map) {
+            var marker = new google.maps.Marker({
+              position: position,
+              map: map
+            });
+            map.panTo(position);
+            markersArray.push(marker);
+          }
+
+          function clearOverlays() {
+            for (var i = 0; i < markersArray.length; i++ ) {
+              markersArray[i].setMap(null);
+            }
+            markersArray.length = 0;
+          }
+
+          $scope.map=map;
 
         };
 
-    //Load the initial map
-    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-    //Event listener to add a marker      
-    google.maps.event.addListener(map, 'click', function(e) {
-      clearOverlays();
-      placeMarker(e.latLng, map);
-      $scope.coordinates = e.latLng;
-      localStorage.userLat = $scope.coordinates.lat();
-      localStorage.userLong = $scope.coordinates.lng();
-    });
-
-    //Actual function to add a marker
-    function placeMarker(position, map) {
-      var marker = new google.maps.Marker({
-        position: position,
-        map: map
-      });
-      map.panTo(position);
-      markersArray.push(marker);
-    }
-
-    function clearOverlays() {
-      for (var i = 0; i < markersArray.length; i++ ) {
-        markersArray[i].setMap(null);
-      }
-      markersArray.length = 0;
-    }
-
-    $scope.map=map;
-
-  };
-
-  google.maps.event.addDomListener(document.getElementById("map"), 'load', $scope.initialise());
+        google.maps.event.addDomListener(document.getElementById("map"), 'load', $scope.initialise());
 
       // DISPLAY IMAGE AGAIN
         
@@ -1212,19 +1222,19 @@ query.get(Parse.User.current().id, {
 .controller('ResultfullscreenCtrl', function($state, $scope, $stateParams, $ionicLoading, $ionicHistory, $http, $ionicPopup) {
   
   
-  // HEART PICTURE
-  $scope.is_hearted = 'false';
+  // // HEART PICTURE
+  // $scope.is_hearted = 'false';
   
-  $scope.heart = function() {
-    $scope.is_hearted = 'true';
-    console.log('heart');
-  };
+  // $scope.heart = function() {
+  //   $scope.is_hearted = 'true';
+  //   console.log('heart');
+  // };
 
-  $scope.unheart = function() {
-    $scope.is_hearted = 'false';
-    console.log('unheart');
-  };
-  // END OF HEART PICTURE
+  // $scope.unheart = function() {
+  //   $scope.is_hearted = 'false';
+  //   console.log('unheart');
+  // };
+  // // END OF HEART PICTURE
 
   mixpanel.track("Detail page view from account page");
 
@@ -1246,9 +1256,9 @@ query.get(Parse.User.current().id, {
   $scope.imageLink = $stateParams.image_Link;
   $scope.answer = $stateParams.answer;
 
-  $scope.goToAccount = function(item,event) {
-    $state.go('tab.account');
-  }
+  // $scope.goToAccount = function(item,event) {
+  //   $state.go('tab.account');
+  // }
 
   
     var Result = Parse.Object.extend("Result");
@@ -1453,20 +1463,9 @@ var currentUser = Parse.User.current();
 
 
   getlocations(currentUser,$scope.skip);
-  getUserStats();
+  
 
-  function getUserStats() {
-    var User = Parse.Object.extend("User");
-    var query = new Parse.Query(User);
-    query.get(Parse.User.current().id, {
-      // The object was retrieved successfully.
-      success: function(retreive_user) {
-        $scope.correct = Number(retreive_user.attributes.wins);
-        total_played = Number(retreive_user.attributes.numberOfGuesses);
-        $scope.incorrect = total_played - $scope.correct;
-      }
-    });
-  }
+
 
   // Make db call to get locations played
   function getlocations(currentUser, skip){
@@ -1515,6 +1514,8 @@ var currentUser = Parse.User.current();
             $scope.played_locations = $scope.played_locations.concat(testObject);  
           }
           
+          getUserStats();
+
           $ionicLoading.hide();
             
         },
@@ -1525,6 +1526,9 @@ var currentUser = Parse.User.current();
                         content: "Swipe down to refresh"
                     })  
           // alert("Error: " + error.code + " " + error.message);
+
+          getUserStats();
+
           $ionicLoading.hide();
         }
 
@@ -1545,7 +1549,48 @@ var currentUser = Parse.User.current();
   }
   // End of getlocations
 
+  function getUserStats() {
 
+    $ionicLoading.show({
+      content: 'Loading',
+      animation: 'fade-in',
+      showBackdrop: true,
+      maxWidth: 200,
+      showDelay: 0,
+      duration: 5000
+    });
+
+    var User = Parse.Object.extend("User");
+    var query = new Parse.Query(User);
+    query.get(Parse.User.current().id, {
+      // The object was retrieved successfully.
+      success: function(retreive_user) {
+
+
+        if (retreive_user.attributes.fbName == undefined) {
+          $scope.username = retreive_user.attributes.username;
+        } else {
+          $scope.username = retreive_user.attributes.fbName;
+        }
+        
+        if (retreive_user.attributes.wins == undefined) {
+          $scope.correct = 0;
+        } else {
+          $scope.correct = Number(retreive_user.attributes.wins);
+        }
+
+        if (retreive_user.attributes.numberOfGuesses == undefined) {
+          total_played = 0;
+        } else {
+          total_played = Number(retreive_user.attributes.numberOfGuesses);
+        }
+
+        $scope.incorrect = total_played - $scope.correct;
+
+        $ionicLoading.hide();
+      }
+    });
+  }
 
   // TAP TO GO TO FULLSCREEN
   $scope.fullscreenImage = function (item) {
@@ -1559,8 +1604,6 @@ var currentUser = Parse.User.current();
     $state.go('resultfullscreen', {objectId: imageObject.objectId, image_Link: encodeURI(imageObject.imageLink), answer: imageObject.Answer, distance: distance, icon: icon }) 
   }
   // END OF BUTTON TO GO FULLSCREEN
-
-
 
   
 

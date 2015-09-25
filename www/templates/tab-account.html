@@ -1,4 +1,4 @@
-<ion-view view-title="{{username}}" cache-view="true">
+<ion-view view-title="{{username}}" cache-view="true" can-swipe-back="false">
 
 
 
@@ -52,10 +52,26 @@
 
     </div>
 </div>
-    
+
+<div class = "row">
+    <!-- NEXT BUTTON -->
+      <div class="col" style = "padding-top: 25px; padding-bottom: 35px;">
+        <center>
+          <a class="button button-icon button-outline button-positive" style = "width:70%;" href = "#/friends">
+            Leaderboard&nbsp; <i class ="ion-person-stalker"></i>
+          </a>
+
+        </center>
+      </div>
+
+</div>
+
   <!-- RESULTS TEXT   -->
   <div class = "row" id = "results"> 
-      <h4>&nbsp;<i class = "ion-images positive"></i> Results</h4>
+      <h4>&nbsp;
+        <i class = "ion-images positive"></i> Results
+        <label class = "dark">(swipe down to refresh)</label>
+      </h4>
   </div>
   <!-- END OF RESULTS TEXT -->
 

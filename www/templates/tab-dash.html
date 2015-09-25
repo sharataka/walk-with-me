@@ -1,5 +1,11 @@
 <ion-view view-title="Tap to Guess" hide-back-button="true" cache-view="false">
 
+<ion-nav-buttons side="right">
+  <a href = "#/account" class="button button-clear">
+    <i class = "ion-person" style = "font-size:20px;"></i>
+  </a>
+</ion-nav-buttons>
+
   <ion-content lazy-scroll>
 
    <ion-refresher
@@ -7,6 +13,19 @@
     on-refresh="refresh()">
   </ion-refresher>
 
+
+<div class = "row">
+  <div class = "col">
+    <center>
+      <div class="button-bar">
+        <a class="button button-small button-positive {{pics_status}}" on-tap = "getPics()">All</a>
+        <a class="button button-small button-positive {{map_status}}" on-tap = "getMap()">< $25</a>
+      </div>
+
+    </center>
+
+  </div>
+</div>
 
   <!-- BEGINNING OF REPEATING -->
     <ion-list>
