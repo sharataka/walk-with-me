@@ -1,10 +1,12 @@
-<ion-view view-title="Tap to Guess" hide-back-button="true" cache-view="false">
+<ion-view view-title="{{title_of_page}}" hide-back-button="true" cache-view="false">
 
 <ion-nav-buttons side="right">
   <a href = "#/account" class="button button-clear">
     <i class = "ion-person" style = "font-size:20px;"></i>
   </a>
 </ion-nav-buttons>
+
+
 
   <ion-content lazy-scroll>
 
@@ -13,19 +15,6 @@
     on-refresh="refresh()">
   </ion-refresher>
 
-
-<div class = "row">
-  <div class = "col">
-    <center>
-      <div class="button-bar">
-        <a class="button button-small button-positive {{pics_status}}" on-tap = "getPics()">All</a>
-        <a class="button button-small button-positive {{map_status}}" on-tap = "getMap()">< $25</a>
-      </div>
-
-    </center>
-
-  </div>
-</div>
 
   <!-- BEGINNING OF REPEATING -->
     <ion-list>
@@ -36,7 +25,7 @@
 
         <!-- START OF IMAGE -->
         <div class="item item-image">
-          <a on-tap="fullscreenImage($index)">
+          <a on-tap="getMap($index)">
             <img src = "{{item.imageLink}}" class = "image"  style= "height: {{windowWidth}}px;">
           </a>
         </div>
@@ -57,7 +46,9 @@
     </ion-list>
   <!-- END OF REPEATING -->
 
+<div ng-if = " title_of_page == 'Tap to Guess' ">
 <div class="spacer" style="width: 300px; height: 30px;"></div>
+
 
   <!-- Get more images text -->
   <center>
@@ -68,8 +59,55 @@
   <!-- End of get more images text -->
 
 <div class="spacer" style="width: 300px; height: 50px;"></div>
+</div>
 
 
+
+
+
+  <div id = "map" data-tap-disabled="true" style = "height: {{height_of_map}}px;"></div>
+
+  <div ng-if = " title_of_page == 'Guess' ">
+
+      <div class = "row">
+        <div class = "col">
+          <center>
+            <div class="button-bar">
+              <a class="button button-small button-positive button-outline ion-ios-arrow-back button-large" on-tap = "getPics()"> &nbsp; Back</a>
+              <a class="button button-small button-positive ion-ios-location button-large" on-tap = "getResult()">  &nbsp; Submit
+              </a>
+            </div>
+          </center>
+        </div>
+      </div>
+    
+  </div>
+<div ng-if = " title_of_page == 'Result' ">
+
+<!-- START OF IMAGE -->
+  <img class = "image" src = "{{image}}" style = "height: {{windowWidth}}px;">
+
+    <h1 style = "top: {{windowWidth-100}}px;">
+     <span>
+      &nbsp;{{distance}}
+
+      <br />
+      <span class='spacer'></span>&nbsp; {{answer}}</small>
+    </span>
+  </h1>
+<!-- END OF IMAGE CARD -->
+
+      <div class = "row">
+        <div class = "col">
+          <center>
+            <div class="button-bar">
+              <a class="button button-small button-positive button-outline button-large" on-tap = "getPics('from_result_page')">Next  &nbsp; <i class = "ion-ios-arrow-forward"></i></a>
+            </div>
+          </center>
+        </div>
+      </div>
+
+</div>
 
   </ion-content>
 </ion-view>

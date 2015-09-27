@@ -1,5 +1,10 @@
 angular.module('starter.services', [])
 
+
+.factory('Maps', function($ionicLoading) {
+    
+})
+
 .factory('Chats', function($ionicLoading) {
   // Might use a resource here that returns a JSON array
 

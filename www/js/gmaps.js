@@ -14,7 +14,7 @@
 }(this, function() {
 
 /*!
- * GMaps.js v0.4.18
+ * GMaps.js v0.4.19
  * http://hpneo.github.com/gmaps/
  *
  * Copyright 2015, Gustavo Leon
@@ -297,7 +297,7 @@ var GMaps = (function(global) {
       if (!getElementById('gmaps_context_menu')) return;
 
       var context_menu_element = getElementById('gmaps_context_menu');
-      
+
       context_menu_element.innerHTML = html;
 
       var context_menu_items = context_menu_element.getElementsByTagName('a'),
@@ -325,7 +325,7 @@ var GMaps = (function(global) {
       context_menu_element.style.left = left + "px";
       context_menu_element.style.top = top + "px";
 
-      context_menu_element.style.display = 'block';
+      // context_menu_element.style.display = 'block';
     };
 
     this.buildContextMenu = function(control, e) {
@@ -334,11 +334,11 @@ var GMaps = (function(global) {
 
         var overlay = new google.maps.OverlayView();
         overlay.setMap(self.map);
-        
+
         overlay.draw = function() {
           var projection = overlay.getProjection(),
               position = e.marker.getPosition();
-          
+
           e.pixel = projection.fromLatLngToContainerPixel(position);
 
           buildContextMenuHTML(control, e);
@@ -347,6 +347,12 @@ var GMaps = (function(global) {
       else {
         buildContextMenuHTML(control, e);
       }
+
+      var context_menu_element = getElementById('gmaps_context_menu');
+
+      setTimeout(function() {
+        context_menu_element.style.display = 'block';
+      }, 0);
     };
 
     this.setContextMenu = function(options) {
@@ -375,9 +381,11 @@ var GMaps = (function(global) {
       ul.style.padding = '8px';
       ul.style.boxShadow = '2px 2px 6px #ccc';
 
-      doc.body.appendChild(ul);
+      if (!getElementById('gmaps_context_menu')) {
+        doc.body.appendChild(ul);
+      }
 
-      var context_menu_element = getElementById('gmaps_context_menu')
+      var context_menu_element = getElementById('gmaps_context_menu');
 
       google.maps.event.addDomListener(context_menu_element, 'mouseout', function(ev) {
         if (!ev.relatedTarget || !this.contains(ev.relatedTarget)) {

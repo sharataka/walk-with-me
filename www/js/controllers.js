@@ -168,24 +168,234 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
 
   mixpanel.track("Home page view");
 
-  $scope.map_status = 'button-outline';
+   
 
-  $scope.getMap = function() {
+$scope.initialise = function() {
+
+  $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0,
+          duration: 5000
+        });
+
+          var myLatlng = new google.maps.LatLng(37.758446, -122.411789);
+          var markersArray = [];
+
+          //Initial settings for the map
+          var mapOptions = {
+                  center: myLatlng,
+                  zoom: 2,
+                  mapTypeId: google.maps.MapTypeId.ROADMAP,
+                  styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }]}]
+
+              };
+
+          //Load the initial map
+           var map = new google.maps.Map(document.getElementById("map"), mapOptions); 
+
+          //Event listener to add a marker      
+          google.maps.event.addListener(map, 'click', function(e) {
+            clearOverlays();
+            placeMarker(e.latLng, map);
+            $scope.coordinates = e.latLng;
+            localStorage.userLat = $scope.coordinates.lat();
+            localStorage.userLong = $scope.coordinates.lng();
+          });
+
+          //Actual function to add a marker
+          function placeMarker(position, map) {
+            var marker = new google.maps.Marker({
+              position: position,
+              map: map
+            });
+            map.panTo(position);
+            markersArray.push(marker);
+          }
+
+          function clearOverlays() {
+            for (var i = 0; i < markersArray.length; i++ ) {
+              markersArray[i].setMap(null);
+            }
+            markersArray.length = 0;
+          }
+
+          $scope.map=map;
+
+    $ionicLoading.hide(); 
+
+    };
+    // End of initialise
+ 
+  google.maps.event.addDomListener(window, 'load', $scope.initialise());
+
+  $scope.getMap = function(item_index) {
+    
+    $scope.active_page = 'map';
+    $scope.active_location = $scope.locations[item_index];
+    
+
+    $scope.title_of_page = 'Guess';
+
+    // Buttons
     $scope.pics_status = 'button-outline';
     $scope.map_status = '';
+    $scope.result_status = 'button-outline';  
+
+
+    $scope.locations_backup = $scope.locations;
     $scope.locations = '';
+
+    // Height of map
+    $scope.height_of_map = window.innerHeight*0.6;
+
+    window.setTimeout(function(){
+      google.maps.event.trigger(map, 'resize');
+    },100);
+
+
   }
 
-  $scope.getPics = function() {
+
+
+  $scope.getPics = function(source) {
+    $scope.title_of_page = 'Tap to Guess';
+
+    console.log(source);
+
+    mainFunctionToLoadLocations();
+    
+    // Buttons
     $scope.pics_status = '';
     $scope.map_status = 'button-outline';
+    $scope.result_status = 'button-outline';  
+
+    $scope.refresh_message = "Answer the pictures above to get more...";
+    
+    // Height of map
+    $scope.height_of_map = 0;
+
+    
   }
 
+
+$scope.getResult = function() {
+
+    
+    // No guess made 
+    if ($scope.coordinates == null) {
+      $ionicPopup.alert({
+                        title: "You haven't made a guess",
+                        content: "Tap on the map to drop a pin and make a guess."
+                    })
+    }
+    // No guess made
+
+    // Guess made
+    else {
+      $scope.title_of_page = 'Result';
+      $scope.image = $scope.active_location.imageLink;
+      $scope.answer = $scope.active_location.Answer;
+
+      // Buttons
+      $scope.pics_status = 'button-outline';
+      $scope.map_status = 'button-outline';
+      $scope.result_status = '';
+
+      // Height of map
+      $scope.height_of_map = window.innerHeight*0.3;
+
+      // Resize the map
+      window.setTimeout(function(){
+        google.maps.event.trigger(map, 'resize');
+      },100);
+
+      // Add actual coordinates to map
+      actualCoor = new google.maps.LatLng(Number($scope.active_location.Lat), Number($scope.active_location.Long));
+      addMarker(actualCoor);
+
+      
+      // Resize the map
+      window.setTimeout(function(){
+        $scope.map.panTo($scope.coordinates);
+      },100);
+
+      // Add circle overlay to map
+      var circle = new google.maps.Circle({
+        map: $scope.map,
+        center: actualCoor,
+        radius: 500000,  //500km away
+        strokeColor:"#0000FF",
+        strokeOpacity:0.8,
+        strokeWeight:2,
+        fillColor:"#0000FF",
+        fillOpacity:0.4
+      });
+      
+      // Add line between points
+      var flightPlanCoordinates = [$scope.coordinates, actualCoor];
+      var flightPath = new google.maps.Polyline({
+        path: flightPlanCoordinates,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+      flightPath.setMap($scope.map);
+
+
+      // Show info window for user's guess 
+      var infowindow = new google.maps.InfoWindow({
+          content: 'Your guess'
+      });
+
+      var marker = new google.maps.Marker({
+        position: $scope.coordinates,
+        map: $scope.map,
+        title: 'Uluru (Ayers Rock)'
+      });
+
+      infowindow.open($scope.map,marker);
+
+      //Calc distance between 2 points
+      var distance_number = google.maps.geometry.spherical.computeDistanceBetween(actualCoor, $scope.coordinates) / 1000;
+      if (distance_number<501) {
+        $scope.round_status = "Correct"
+      } else {
+        $scope.round_status = "Incorrect"
+      }
+      distance = distance_number.toFixed(0);
+      distance = numberWithCommas(distance);
+      $scope.distance = distance + ' km away';
+
+
+    } 
+    // Guess made
+
+    //Format number with comma
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    // End of number with commas
+}
+// End of getResult
+
+ function addMarker(location) {
+    marker = new google.maps.Marker({
+        position: location,
+        map: $scope.map
+    });
+}
+
+
   $scope.windowWidth = window.innerWidth;
-  $scope.heightWidth = window.innerHeight - 100;
+  
   var currentUser = Parse.User.current();
-  $scope.locations = '';
   $scope.refresh_message = "Answer the pictures above to get more...";
+  $scope.locations = '';
+  
 
   $ionicLoading.show({
           content: 'Loading',
@@ -197,7 +407,8 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
         });
 
 
-  mainFunctionToLoadLocations();
+  $scope.getPics();
+  
 
   function mainFunctionToLoadLocations() {
 
@@ -319,10 +530,8 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
   }
   // End of getlocations
 
-    $scope.fullscreenImage = function(item_index){
-      // $state.go('fullscreen', {objectId:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long , image_Link: encodeURI($scope.locations[item_index].imageLink) })
-      $state.go('guess', {location_id:$scope.locations[item_index].objectId , actual_lat:$scope.locations[item_index].Lat , actual_lng:$scope.locations[item_index].Long })
-  };
+
+
   
 })
 // END OF HOME CONTROLLER
@@ -680,8 +889,13 @@ query.get(Parse.User.current().id, {
               };
 
           //Load the initial map
-           var map = new google.maps.Map(document.getElementById("map"), mapOptions); 
           
+          
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+           
+          
+
 
           //Event listener to add a marker      
           google.maps.event.addListener(map, 'click', function(e) {
@@ -709,7 +923,6 @@ query.get(Parse.User.current().id, {
             markersArray.length = 0;
           }
 
-          $scope.map=map;
 
         };
 
