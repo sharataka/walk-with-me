@@ -160,7 +160,7 @@ if (window.localStorage['sign_in_method'] == 'facebook') {
     
 })
 
-.controller('DashCtrl', function($scope, $state, $ionicLoading, Chats, $ionicPopup, $ionicHistory) {
+.controller('DashCtrl', function($scope, $ionicScrollDelegate, $state, $ionicLoading, Chats, $ionicPopup, $ionicHistory, $http) {
 
   $ionicHistory.nextViewOptions({
     disableAnimate: true
@@ -182,7 +182,7 @@ $scope.initialise = function() {
         });
 
           var myLatlng = new google.maps.LatLng(37.758446, -122.411789);
-          var markersArray = [];
+          $scope.markersArray = [];
 
           //Initial settings for the map
           var mapOptions = {
@@ -196,30 +196,36 @@ $scope.initialise = function() {
           //Load the initial map
            var map = new google.maps.Map(document.getElementById("map"), mapOptions); 
 
+
           //Event listener to add a marker      
           google.maps.event.addListener(map, 'click', function(e) {
-            clearOverlays();
-            placeMarker(e.latLng, map);
+            
+            $scope.clearOverlays();
             $scope.coordinates = e.latLng;
-            localStorage.userLat = $scope.coordinates.lat();
-            localStorage.userLong = $scope.coordinates.lng();
+            $scope.placeMarker(e.latLng, $scope.map);
+
           });
 
           //Actual function to add a marker
-          function placeMarker(position, map) {
+          $scope.placeMarker = function(position, map) {
+            
             var marker = new google.maps.Marker({
               position: position,
               map: map
             });
+
+            $scope.markersArray.push(marker);
+
             map.panTo(position);
-            markersArray.push(marker);
+
           }
 
-          function clearOverlays() {
-            for (var i = 0; i < markersArray.length; i++ ) {
-              markersArray[i].setMap(null);
+          $scope.clearOverlays = function() { 
+
+            for (var i = 0; i < $scope.markersArray.length; i++ ) {
+              $scope.markersArray[i].setMap(null);
             }
-            markersArray.length = 0;
+            $scope.markersArray = [];
           }
 
           $scope.map=map;
@@ -231,12 +237,47 @@ $scope.initialise = function() {
  
   google.maps.event.addDomListener(window, 'load', $scope.initialise());
 
-  $scope.getMap = function(item_index) {
+
+
+  $scope.getPics = function(source) {
     
-    $scope.active_page = 'map';
-    $scope.active_location = $scope.locations[item_index];
+    $ionicScrollDelegate.scrollTop();
+    $scope.result_page = 'none';
+    $scope.guess_page = 'none';
+    $scope.pic_page = '';
+
+    // Height of map
+    $scope.height_of_map = 1;
+      
+      // Resize the map
+      window.setTimeout(function(){
+        google.maps.event.trigger(map, 'resize');
+      },100);
+
+      $scope.title_of_page = 'Tap to Guess';
+
+
+    if (source == "from_result_page") {
+      $scope.reset_map();
+    }
+
+    mainFunctionToLoadLocations();
     
 
+    $scope.refresh_message = "Answer the pictures above to get more...";
+  
+    
+  }
+
+
+
+  $scope.getMap = function(item_index) {
+    
+    $scope.guess_page = '';
+    $scope.pic_page = 'none';
+    $ionicScrollDelegate.scrollTop();
+    $scope.active_location = $scope.locations[item_index];
+    
     $scope.title_of_page = 'Guess';
 
     // Buttons
@@ -249,7 +290,7 @@ $scope.initialise = function() {
     $scope.locations = '';
 
     // Height of map
-    $scope.height_of_map = window.innerHeight*0.6;
+    $scope.height_of_map = window.innerHeight*0.75;
 
     window.setTimeout(function(){
       google.maps.event.trigger(map, 'resize');
@@ -259,42 +300,26 @@ $scope.initialise = function() {
   }
 
 
-
-  $scope.getPics = function(source) {
-    $scope.title_of_page = 'Tap to Guess';
-
-    console.log(source);
-
-    mainFunctionToLoadLocations();
-    
-    // Buttons
-    $scope.pics_status = '';
-    $scope.map_status = 'button-outline';
-    $scope.result_status = 'button-outline';  
-
-    $scope.refresh_message = "Answer the pictures above to get more...";
-    
-    // Height of map
-    $scope.height_of_map = 0;
-
-    
-  }
-
-
 $scope.getResult = function() {
 
     
     // No guess made 
     if ($scope.coordinates == null) {
       $ionicPopup.alert({
-                        title: "You haven't made a guess",
-                        content: "Tap on the map to drop a pin and make a guess."
-                    })
+            title: "You haven't made a guess",
+            content: "Tap on the map to drop a pin and make a guess."
+        })
     }
     // No guess made
 
     // Guess made
     else {
+      
+      $scope.pic_page = 'none';
+      $scope.result_page = '';
+      $scope.guess_page = 'none';
+
+      $ionicScrollDelegate.scrollTop();
       $scope.title_of_page = 'Result';
       $scope.image = $scope.active_location.imageLink;
       $scope.answer = $scope.active_location.Answer;
@@ -305,7 +330,7 @@ $scope.getResult = function() {
       $scope.result_status = '';
 
       // Height of map
-      $scope.height_of_map = window.innerHeight*0.3;
+      $scope.height_of_map = window.innerHeight*0.4;
 
       // Resize the map
       window.setTimeout(function(){
@@ -314,16 +339,15 @@ $scope.getResult = function() {
 
       // Add actual coordinates to map
       actualCoor = new google.maps.LatLng(Number($scope.active_location.Lat), Number($scope.active_location.Long));
-      addMarker(actualCoor);
+      $scope.placeMarker(actualCoor, $scope.map);
 
-      
-      // Resize the map
+      // Pan map
       window.setTimeout(function(){
         $scope.map.panTo($scope.coordinates);
       },100);
 
       // Add circle overlay to map
-      var circle = new google.maps.Circle({
+      $scope.circle = new google.maps.Circle({
         map: $scope.map,
         center: actualCoor,
         radius: 500000,  //500km away
@@ -345,20 +369,6 @@ $scope.getResult = function() {
       });
       flightPath.setMap($scope.map);
 
-
-      // Show info window for user's guess 
-      var infowindow = new google.maps.InfoWindow({
-          content: 'Your guess'
-      });
-
-      var marker = new google.maps.Marker({
-        position: $scope.coordinates,
-        map: $scope.map,
-        title: 'Uluru (Ayers Rock)'
-      });
-
-      infowindow.open($scope.map,marker);
-
       //Calc distance between 2 points
       var distance_number = google.maps.geometry.spherical.computeDistanceBetween(actualCoor, $scope.coordinates) / 1000;
       if (distance_number<501) {
@@ -367,28 +377,322 @@ $scope.getResult = function() {
         $scope.round_status = "Incorrect"
       }
       distance = distance_number.toFixed(0);
+      $scope.distance = distance;
       distance = numberWithCommas(distance);
-      $scope.distance = distance + ' km away';
+      $scope.distance_text = distance + ' km away';
 
+      // Save result to db
+      save_result_to_db(distance_number, $scope.active_location.objectId, $scope.coordinates.H, $scope.coordinates.L);
 
+      // Remove picture from the home feed
+      remove_location_from_feed();
     } 
     // Guess made
+
+  function remove_location_from_feed() {
+      var testObject = JSON.parse(window.localStorage['locations']);
+      for (var i = 0; i < testObject.length; i++) {
+        if ( testObject[i].objectId == $scope.active_location.objectId ) {
+          testObject.splice(i,1);
+        }
+      }
+      window.localStorage['locations'] = JSON.stringify(testObject);
+  }
+
+  function get_community_results() {
+      
+      $ionicLoading.show({
+          content: 'Loading',
+          animation: 'fade-in',
+          showBackdrop: true,
+          maxWidth: 200,
+          showDelay: 0
+        });
+
+      var Result = Parse.Object.extend("Result");
+      var result_query = new Parse.Query(Result);
+      result_query.equalTo("locationId", $scope.active_location.objectId);
+      result_query.ascending("distance");
+      result_query.find({
+
+      success: function(results) {
+        
+
+        // Total number of guesses
+        $scope.total_guesses = results.length;
+        
+        // Avg guess
+        var index_of_median = $scope.total_guesses / 2;
+        if ($scope.total_guesses % 2 == 0) {
+          $scope.avg_guess = ( Number(results[index_of_median - 1].get('distance').toFixed(0)) + Number(results[index_of_median].get('distance').toFixed(0)) ) / 2;
+        }
+        else {
+          $scope.avg_guess = results[index_of_median - 0.5].get('distance').toFixed(0);
+        }
+        
+        
+        // Best guess
+        $scope.best_guess = results[0].get('distance').toFixed(0);
+
+        // Get user's rank
+        for (var i = 0; i < results.length; i++) {
+          current_object = results[i];
+          if ( current_object.get('distance').toFixed(0) == $scope.distance) {
+            var current_rank = i;
+          }
+
+        }
+        $scope.rank = current_rank + 1;
+        $scope.rank = ordinal_suffix_of($scope.rank);
+        // End of getting user's rank
+
+ // FACEBOOK FRIENDS RESULTS
+            if (window.localStorage['sign_in_method'] == 'facebook') {
+              
+
+            $ionicLoading.show({
+                content: 'Loading',
+                animation: 'fade-in',
+                showBackdrop: true,
+                maxWidth: 200,
+                showDelay: 0,
+                duration: 5000
+              });
+
+            var access_token = currentUser._serverData.authData.facebook.access_token;
+
+            // friends 
+            var fql_query_url = 'https://graph.facebook.com/me?fields=friends{picture{url,height=961},name,id}&access_token='+access_token;
+
+            $http.get(fql_query_url).then(function(resp) {
+                $scope.friends = resp.data.friends.data;
+                var array_of_fb_ids = [];
+                for (var i = 0; i < $scope.friends.length; i ++) {
+                  array_of_fb_ids.push($scope.friends[i].id);
+                }
+
+              console.log(array_of_fb_ids);
+                
+                var Result = Parse.Object.extend("Result");
+                var result_lookup = new Parse.Query(Result);
+                result_lookup.equalTo("locationId", $scope.active_location.objectId);
+                result_lookup.containedIn("facebookId", array_of_fb_ids);
+                result_lookup.descending("distance");
+                
+                result_lookup.find({
+
+                    // Start of db success query
+                    success: function(friends_results) {
+                      console.log(friends_results);
+                      $scope.friends_result_combined = [];
+                      
+                      $scope.friends_text = "Your friends";
+                      if (friends_results.length == 0) {
+                        $ionicLoading.hide();
+                        $scope.friends_text = "Your friends haven't played this yet!"
+                      }
+                      for (var i = 0; i < friends_results.length; i++) {
+
+                        current_result = friends_results[i];
+                        var distance = current_result.attributes.distance.toFixed(0);
+                        var facebookId = current_result.attributes.facebookId;
+                        
+                        for (var i = 0; i < $scope.friends.length; i++) {
+                          current = $scope.friends[i];
+                          if (current.id == facebookId) {
+
+                            var name = current.name;
+                            var fb_picture = current.picture.data.url;
+                            
+                          }
+                        }
+                        
+                        var result_object = {distance: distance, name: name, fb_picture: fb_picture}
+                        $scope.friends_result_combined.push(result_object);
+                        console.log($scope.friends_result_combined);
+                        $ionicLoading.hide();
+                      } 
+                          
+                    },
+                    // End of db success query
+                    
+                    // Beginning of error
+                    error: function(error) {
+                        $ionicPopup.alert({
+                          title: "Uh oh!",
+                          content: "Swipe down to refresh"
+                        })          
+                      $ionicLoading.hide();
+                    }
+                    // End of error
+                });
+              
+            }, function(err) {
+              console.error('ERR', err);
+              $ionicLoading.hide();
+            })
+        
+        
+
+      }
+      // END OF FACEBOOK FRIENDS RESULTS
+
+
+        else {
+          $scope.friends_text = "Sign in with Facebook";
+          $scope.friends_text_subheader = "Logout and sign up with Facebook to play with your friends!";
+          $ionicLoading.hide();
+        }
+
+
+      }, 
+
+      error: function(error) {
+        $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        // alert("Error: " + error.code + " " + error.message);
+        $ionicLoading.hide();
+      }
+
+    });
+
+  }
+
+
+   function save_result_to_db(distance_number, location_id, guessLat, guessLong) {
+   // SAVE SCORE TO DATABASE
+      var Result = Parse.Object.extend("Result");
+      var result = new Result();
+      
+      result.set("distance", distance_number);
+      result.set("user", Parse.User.current().id);
+      result.set("locationId", location_id);
+      result.set("guessLat", Number(guessLat));
+      result.set("guessLong", Number(guessLong));
+      if (window.localStorage['sign_in_method'] == 'facebook') {
+        result.set("facebookId", Parse.User.current()._serverData.authData.facebook.id);
+      }
+      
+      result.save(null, {
+        success: function(result) {
+
+          get_community_results();
+          
+          var User = Parse.Object.extend("User");
+          var query = new Parse.Query(User);
+          query.get(Parse.User.current().id, {
+            // The object was retrieved successfully.
+            success: function(retreive_user) {
+
+                if (retreive_user.attributes.numberOfGuesses == undefined) {
+                  var numberofGuesses = 0; 
+                } else {
+                  var numberofGuesses = Number(retreive_user.attributes.numberOfGuesses);
+                }
+
+                if (retreive_user.attributes.wins == undefined) {
+                  var numberofWins = 0; 
+                } else {
+                  var numberofWins = Number(retreive_user.attributes.wins);
+                }
+                
+
+                // Update object
+                retreive_user.save(null, {
+                  success: function(update_user) {
+                    
+                    numberofGuesses++;
+                    
+                    if ($scope.round_status == "Correct") {
+                      numberofWins++;
+                      update_user.set("wins", numberofWins);
+                      update_user.set("numberOfGuesses", numberofGuesses);
+                      update_user.save();
+                    }
+                    else {
+                      update_user.set("numberOfGuesses", numberofGuesses);
+                      update_user.save();
+                    }
+
+                    
+                  }
+                });
+            },
+            error: function(object, error) {
+              // The object was not retrieved successfully.
+              // error is a Parse.Error with an error code and message.
+            }
+          });
+
+          
+        },
+        
+        error: function(result, error) {
+          $ionicPopup.alert({
+                        title: "Uh oh!",
+                        content: "Swipe down to refresh"
+                    })  
+        }
+        
+
+      });
+      // END OF SAVING SCORE TO DATABASE
+      
+    }
+    // End of save_result_to_db function
+
+    $scope.reset_map = function() {
+      
+      // Remove line
+      flightPath.setMap(null);
+      
+      // Remove circle
+      $scope.circle.setMap(null);
+
+      // Remove markers
+      $scope.clearOverlays();
+
+      // Clear out user's guess
+      $scope.coordinates = null
+
+    }
 
     //Format number with comma
     function numberWithCommas(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
     // End of number with commas
+
+   // Add ordinal suffix
+    function ordinal_suffix_of(i) {
+      var j = i % 10,
+          k = i % 100;
+      if (j == 1 && k != 11) {
+          return i + "st";
+      }
+      if (j == 2 && k != 12) {
+          return i + "nd";
+      }
+      if (j == 3 && k != 13) {
+          return i + "rd";
+      }
+      return i + "th";
+    }
+    // End of ordinal suffix
 }
 // End of getResult
 
- function addMarker(location) {
-    marker = new google.maps.Marker({
-        position: location,
-        map: $scope.map
-    });
-}
+   $scope.morePictures = function () {
+      mixpanel.track("Results page: view more pictures");
+      window.open('https://www.google.com/images?q=' + $scope.answer +'', 'blank');
+    }
 
+    $scope.moreInfo = function () {
+      mixpanel.track("Results page: view more info");
+      window.open('https://www.google.com/search?q=' + $scope.answer +'', 'blank');
+    }
 
   $scope.windowWidth = window.innerWidth;
   
@@ -475,6 +779,15 @@ $scope.getResult = function() {
 
     success: function(results) {
 
+    $ionicLoading.show({
+            content: 'Loading',
+            animation: 'fade-in',
+            showBackdrop: true,
+            maxWidth: 200,
+            showDelay: 0,
+            duration: 5000
+          });
+
         user_result = [];
         for (var i = 0; i < results.length; i++) {
           var object = results[i];
@@ -497,7 +810,7 @@ $scope.getResult = function() {
           $scope.locations = testObject;
             
           if (locations.length == 0){
-            $scope.refresh_message = "You've played all of our pictures. But we'll have more tomorrow so come back...";
+            $scope.refresh_message = "You've played all of our pictures. But we'll have more soon so come back. Email me at sharataka@gmail.com to add your own pictuers!";
           }
 
           $ionicLoading.hide();

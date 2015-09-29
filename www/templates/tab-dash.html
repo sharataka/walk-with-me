@@ -43,10 +43,11 @@
 
       </ion-item>
 
+
     </ion-list>
   <!-- END OF REPEATING -->
 
-<div ng-if = " title_of_page == 'Tap to Guess' ">
+<div style = "display:{{pic_page}}">
 <div class="spacer" style="width: 300px; height: 30px;"></div>
 
 
@@ -63,11 +64,10 @@
 
 
 
-
-
   <div id = "map" data-tap-disabled="true" style = "height: {{height_of_map}}px;"></div>
 
-  <div ng-if = " title_of_page == 'Guess' ">
+
+  <div style = "display:{{guess_page}}"
 
       <div class = "row">
         <div class = "col">
@@ -80,16 +80,21 @@
           </center>
         </div>
       </div>
-    
+  
+  <div class="spacer" style="width: 300px; height: 50px;"></div>
+
   </div>
-<div ng-if = " title_of_page == 'Result' ">
+
+
+
+<div style = "display:{{result_page}}"
 
 <!-- START OF IMAGE -->
   <img class = "image" src = "{{image}}" style = "height: {{windowWidth}}px;">
 
     <h1 style = "top: {{windowWidth-100}}px;">
      <span>
-      &nbsp;{{distance}}
+      &nbsp;{{distance_text}}
 
       <br />
       <span class='spacer'></span>&nbsp; {{answer}}</small>
@@ -107,7 +112,45 @@
         </div>
       </div>
 
+    <div class="spacer" style="width: 300px; height: 10px;"></div>
+
+<div class = "row">
+  <div class = "col col-100">
+    <center><h4><i class = "ion-person-stalker positive"></i>&nbsp;{{rank}} place out of {{total_guesses}} guesses</h4></h4></center>
+  </div>
 </div>
+    
+    <hr style = "width:20%">
+    <!-- <div class="spacer" style="width: 300px; height: 40px;"></div> -->
+
+  <div class = "row">
+      
+      <div class="col col-33">
+        <center><h4>{{distance}} km</h4></center>
+        <center><p>Your guess</p></center>
+      </div>
+
+      <div class="col col-33">
+        <center><h4>{{avg_guess}} km</h4></center>
+        <center><p>Avg guess</p></center>
+      </div>
+
+      <div class="col col-33">
+        <center><h4>{{best_guess}} km</h4></center>
+        <center><p>Best guess</p></center>
+      </div>
+
+  </div>
+
+
+
+<div class="spacer" style="width: 300px; height: 60px;"></div>
+
+
+
+</div>
+
+
 
   </ion-content>
 </ion-view>

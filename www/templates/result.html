@@ -3,88 +3,15 @@
 
 
 
-<!-- DIV FOR MAP -->
-  <div id = "map_result" data-tap-disabled="true" class = "image"></div>
-        <h1>
-
-          <span ng-if= "round_status === 'Correct'">
-            &nbsp;<i class ="ion-checkmark"></i> &nbsp;Correct!
-          </span>
-          
-          <span ng-if= "round_status === 'Incorrect'">
-            &nbsp;<i class ="ion-close"></i> &nbsp;Incorrect.
-          </span>  
-
-    </h1>
-<!-- END OF MAP DIV -->
-
-
-  
-<!-- START OF IMAGE -->
-  <img class = "image" src = "{{image}}" style = "height: {{windowWidth}}px;">
-
-    <h1 style = "top: {{windowWidth-100}}px;">
-  	 <span>
-  		&nbsp;{{distance}} km away
-
-  		<br />
-  		<span class='spacer'></span>&nbsp; {{answer}}</small>
-  	</span>
-  </h1>
-<!-- END OF IMAGE CARD -->
-
-<!-- START OF BUTTONS -->
-<div class = "row"> 
-
-    <!-- MORE INFO -->
-    <div class="col col-50">
-        <center>
-          <a class="button button-icon ion-ios-information-outline positive" href = "" on-tap = "moreInfo()">
-            &nbsp;<span class = "dark">Explore</span>
-          </a>
-        </center>
-    </div>
-
-    <!-- MORE PICTURES -->
-    <div class="col col-50">
-        <center>
-          <a class="button button-icon ion-images positive" href = "" on-tap = "morePictures()">
-            &nbsp;<span class = "dark">Pictures</span>
-          </a>
-        </center>
-    </div>
-</div>
-
-
-<div class = "row">
-  <div class = "col col-100">
-    <center><h4><i class = "ion-person-stalker positive"></i>&nbsp;{{rank}} place out of {{total_guesses}} guesses</h4></h4></center>
-  </div>
-</div>
 
 
 
-  <div class = "row">
-      
-      <div class="col col-33">
-        <center><h4>{{distance}} km</h4></center>
-        <center><p>Your guess</p></center>
-      </div>
 
-      <div class="col col-33">
-        <center><h4>{{avg_guess}} km</h4></center>
-        <center><p>Avg guess</p></center>
-      </div>
 
-      <div class="col col-33">
-        <center><h4>{{best_guess}} km</h4></center>
-        <center><p>Best guess</p></center>
-      </div>
 
-  </div>
+
 
 <!-- FRIENDS -->
-<hr style = "width:20%">
 <div class = "row">
   <div class = "col col-100">
     <center><h4><i class = "ion-social-facebook positive"></i>&nbsp; {{friends_text}}</h4></center>
@@ -111,18 +38,7 @@
 </ion-item>
 <!-- END OF FRIENDS -->
   
-<div class = "row">
-    <!-- NEXT BUTTON -->
-      <div class="col" style = "padding-top: 25px; padding-bottom: 35px;">
-        <center>
-          <a class="button button-icon button-outline button-positive" href = "#/dash" style = "width:70%;">
-            Next Destination&nbsp; <i class ="ion-chevron-right"></i>
-          </a>
 
-        </center>
-      </div>
-
-</div>
 
 
 
